@@ -1,6 +1,6 @@
 <template>
     <div class="login">
-        <h1 class="title">校园生活后台管理</h1>
+        <h1 class="title">便捷校园宝后台管理</h1>
         <div class="form-wapper">
             <div class="avator">
                 <img src="~assets/img/logo.png" alt="" />
@@ -108,7 +108,15 @@ export default {
                    {
                         if (this.formData.password === '123456') { // 验证成功
                          window.sessionStorage.setItem('token',this.identifyCode);// 模拟设置 token 
-                        this.$router.push('/home');
+
+                    this.$store.commit('getUserdata',{
+                        username:'admin',
+                            id:this.identifyCode+'',
+                            token:this.identifyCode,
+                            role:1
+                    });
+
+                      this.$router.push('/home');
                         this.$message.success('登录成功');
                        
                     } else {

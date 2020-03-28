@@ -16,6 +16,14 @@ import {
     Breadcrumb,
     BreadcrumbItem,
     Tooltip,
+    Card,
+    Col,
+    Row,
+    Table,
+    TableColumn,
+    Dialog,
+    Pagination,
+    Switch
  } from 'element-ui';
 
 
@@ -34,5 +42,13 @@ Vue.use(Breadcrumb)
 Vue.use(BreadcrumbItem)
 Vue.use(Tooltip)
 Vue.use(Button);
+Vue.use(Card)
+Vue.use(Col)
+Vue.use(Row)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(Dialog)
+Vue.use(Pagination)
+Vue.use(Switch)
 Vue.prototype.$message = Message;
 Vue.prototype.$confirm=MessageBox.confirm;

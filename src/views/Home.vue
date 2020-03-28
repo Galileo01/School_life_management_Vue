@@ -4,7 +4,7 @@
             <el-header>
                 <div class="logo-wapper">
                     <img src="~assets/img/logo.png" alt="" class="logo" />
-                    <h3>校园生活 后台Web 管理系统</h3>
+                    <h3>便捷校园宝 后台Web 管理系统</h3>
                 </div>
                 <div class="left-wapper">
                     <div class="avator" @click="goProfile">
@@ -154,13 +154,7 @@ export default {
                     {
                         id: 501,
                         authName: '数据报表',
-                        path: 'home/static',
-                        children: []
-                    },
-                    {
-                        id: 501,
-                        authName: '数据导入',
-                        path: 'home/import',
+                        path: 'home/report',
                         children: []
                     }
                 ]
@@ -242,7 +236,7 @@ export default {
 .el-main {
     background-color: #eaedf1;
     // border-left: 1px solid #d2d6de;
-    padding: 0;
+    padding: 10px;
 }
 .left-wapper {
     margin-right: 10px;
