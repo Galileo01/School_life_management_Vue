@@ -21,6 +21,7 @@
                     icon="el-icon-edit"
                     size="mini"
                     @click="edit(row.role, row.id)"
+
                 >
                 </el-button>
                 <el-button
@@ -70,6 +71,8 @@ export default {
                 return;
             }
             this.$emit('edit', id);
+
+            
         },
 
         deleteFun(role, id) {
@@ -84,7 +87,7 @@ export default {
                 this.$message.error('无法分配系统管理员，你的权限太低');
                 return;
             }
-            this.$emit('allocate',id);
+            this.$emit('allocate', id);
         },
 
         switchClick(userdata) {
