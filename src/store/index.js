@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    userdata:{"id":"2544","username":"admin","token":"2544","role":1}
+    userdata:{"id":"2544","username":"admin","token":"2544","role":0}
   },
   mutations: {
     getUserdata(state,payload)

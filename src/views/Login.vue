@@ -113,7 +113,7 @@ export default {
                         username:'admin',
                             id:this.identifyCode+'',
                             token:this.identifyCode,
-                            role:1
+                            role:0
                     });
 
                       this.$router.push('/home');

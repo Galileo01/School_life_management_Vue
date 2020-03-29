@@ -42,7 +42,7 @@
                         type="warning"
                         icon="el-icon-setting"
                         size="mini"
-                        @click="allocate(row.role, row.id)"
+                        @click="allocate(row.id)"
                     ></el-button>
                 </el-tooltip>
             </template>
@@ -80,11 +80,13 @@ export default {
                 this.$message.error('无法删除系统管理员，你的权限太低');
                 return;
             }
-            this.$emit('delete', id);
+            this.$emit('delete', {
+                role,id
+            });
         },
-        allocate(role, id) {
-            if (role === 0 && this.UserRole > role) {
-                this.$message.error('无法分配系统管理员，你的权限太低');
+        allocate(id) {
+            if (this.UserRole !==0) {
+                this.$message.error('无法分配权限，你的权限太低');
                 return;
             }
             this.$emit('allocate', id);

@@ -4,14 +4,14 @@
     :visible="dialogVisible"
     @update:visible="$emit('update:dialogVisible',false)"
     width="30%"
-   
+   @close="clear"
   >
   <!--由于表单组件 被分离，必须舍弃.sync 修饰符，
        必须向外通知 visible 属性的更新 -->
     <el-form
       :model="newUser"
       :rules="addFormrules"
-      ref="addForm"
+      ref="form"
       label-width="70px"
     >
       <el-form-item
@@ -29,10 +29,10 @@
 
       </el-form-item>
       <el-form-item
-        label="邮箱"
-        prop="email"
+        label="微信"
+        prop="wx"
       >
-        <el-input v-model="newUser.email"></el-input>
+        <el-input v-model="newUser.wx"></el-input>
 
       </el-form-item>
       <el-form-item
@@ -50,7 +50,7 @@
       <el-button @click="$emit('update:dialogVisible',false)">取 消</el-button>
       <el-button
         type="primary"
-        
+        @click="submit"
       >确 定</el-button>
     </span>
   </el-dialog>
@@ -61,27 +61,12 @@ import { emailCheck, mobileCheck } from "commonjs/utils";
 export default {
   name: "AddDialog",
   data() {
-    //在 data 内定义 邮箱，电话的自定义 验证器
-
-    // const emailCheck = (rule, value, callback) => {
-    //   //验证 邮箱的 正则
-    //   const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
-    //   if (reg.test(value)) return callback();
-    //   callback(new Error("请输入合法邮箱"));
-    // };
-
-    // const mobileCheck = (rule, value, callback) => {
-    //   //验证 手机号码的 正则
-    //   const reg = /^1(3|4|5|7|8)\d{9}$/;
-
-    //   if (reg.test(value)) return callback();
-    //   callback(new Error("请输入合法电话"));
-    // };
+  
     return {
       newUser: {
         username: "",
         password: "",
-        email: "",
+        wx: "",
         mobile: ""
       },
       addFormrules: {
@@ -94,12 +79,9 @@ export default {
           { min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur" }
         ],
         //邮箱和 电话使用自定义的 验证规则
-        email: [
-          { required: true, message: "请输入邮箱", trigger: "blur" },
-          {
-            validator: emailCheck,
-            trigger: "blur"
-          }
+        wx: [
+          { required: true, message: "请输入微信", trigger: "blur" },
+          
         ],
         mobile: [
           { required: true, message: "请输入电话", trigger: "blur" },
@@ -114,7 +96,20 @@ export default {
   props: {
     dialogVisible: Boolean
   },methods:{
-     
+     submit(){
+        this.$refs.form.validate(valid=>{
+          if(!valid)
+          return ;
+          else {
+            this.$message.success('成功添加用户');
+            this.$emit('update:dialogVisible',false);
+          }
+        })
+       
+     },
+     clear(){
+       this.$refs.form.resetFields();
+     }
   }
 };
 </script>

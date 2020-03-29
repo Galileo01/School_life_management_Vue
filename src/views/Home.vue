@@ -170,6 +170,17 @@ export default {
                         path: 'home/location',
                         children: []
                     }]
+            },{
+                id: 800,
+                authName: '其他',
+                path: '',
+                children: [
+                    {
+                        id: 801,
+                        authName: '关于',
+                        path: 'home/about',
+                        children: []
+                    }]
             }
     
         ];
@@ -179,7 +190,7 @@ export default {
             'order',
             'shuju',
             'ren',
-            
+            'guanyu'
         ];
     }
 };
@@ -204,6 +215,10 @@ export default {
         display: flex;
         height: 50px;
         align-items: center;
+        img{
+            border-radius: 50%;
+        }
+        
     }
     .logo {
         height: 40px;
