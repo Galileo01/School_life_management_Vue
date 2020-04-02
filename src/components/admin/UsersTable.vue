@@ -1,11 +1,15 @@
 <template>
     <el-table border stripe :data="users">
         <el-table-column type="index"></el-table-column>
-         <el-table-column label="用户ID" prop="id"></el-table-column>
+        <el-table-column label="账户ID" prop="id"></el-table-column>
         <el-table-column label="用户名" prop="username"></el-table-column>
         <el-table-column label="微信" prop="wx"></el-table-column>
         <el-table-column label="电话" prop="mobile"></el-table-column>
-        
+        <el-table-column label="用户角色" prop="role">
+            <template v-slot="{ row }">
+                {{ roleText(row.role) }}
+            </template>
+        </el-table-column>
         <el-table-column label="状态">
             <template v-slot="{ row }">
                 <el-switch v-model="row.state"></el-switch>
@@ -27,6 +31,21 @@
                     @click="deleteFun( row.id)"
                     size="mini"
                 ></el-button>
+
+                <el-tooltip
+                    class="item"
+                    effect="dark"
+                    content="设置角色"
+                    placement="top"
+                    :enterable="false"
+                >
+                    <el-button
+                        type="warning"
+                        icon="el-icon-setting"
+                        size="mini"
+                        @click="allocate(row.id)"
+                    ></el-button>
+                </el-tooltip>
             </template>
         </el-table-column>
     </el-table>

@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    title="添加用户"
+    title="添加管理员"
     :visible="dialogVisible"
     @update:visible="$emit('update:dialogVisible',false)"
     width="30%"

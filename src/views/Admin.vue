@@ -1,7 +1,7 @@
 <template>
-    <div class="users">
+    <div class="admin">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-           <BreadNav :texts="['用户管理','用户列表']"/>
+            <BreadNav :texts="['用户管理','管理员列表']"/>
         </el-breadcrumb>
         <el-card>
             <!-- 搜索-->
@@ -19,7 +19,11 @@
                         ></el-button>
                     </el-input>
                 </el-col>
-               
+                <el-col :span="4">
+                    <el-button type="primary" @click="adddialogVisible = true"
+                        >添加管理员</el-button
+                    >
+                </el-col>
             </el-row>
             <!--表格-->
             <users-table
@@ -54,10 +58,12 @@
 </template>
 
 <script>
-import UsersTable from 'components/users/UsersTable';
-import EditDialog from 'components/users/EditDialog';
+import UsersTable from 'components/admin/UsersTable';
+import AddDialog from 'components/admin/AddDialog';
+import EditDialog from 'components/admin/EditDialog';
+import SetRoleDialog from 'components/admin/SetRoleDialog';
 export default {
-    name: 'Users',
+    name: 'Admin',
     data() {
         return {
             //  获取用户数据 的传入参数
@@ -167,7 +173,9 @@ export default {
     },
     components: {
         UsersTable,
+        AddDialog,
         EditDialog,
+        SetRoleDialog
     }
 };
 </script>

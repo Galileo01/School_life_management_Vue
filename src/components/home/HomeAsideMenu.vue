@@ -49,8 +49,19 @@ export default {
     methods: {
         savePath(path) {
             window.sessionStorage.setItem('activePath', '/' + path);
+            this.$store.commit('changeActivePath', '/' + path);
             this.activePath = '/' + path;
+        },
+        getActivePath() {
+            const path = sessionStorage.getItem('activePath');
+            if (path) {
+                this.activePath = path;
+                this.$store.commit('changeActivePath', '/' + path);
+            }
         }
+    },
+    created() {
+        this.getActivePath();
     }
 };
 </script>
@@ -65,7 +76,7 @@ export default {
     .title {
         margin-left: 10px;
     }
-    /deep/  .el-submenu__title i {
+    /deep/ .el-submenu__title i {
         color: #fff;
     }
 }

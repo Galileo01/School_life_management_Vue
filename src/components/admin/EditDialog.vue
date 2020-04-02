@@ -71,7 +71,8 @@ export default {
                 this.$message.success('用户信息更新成功');
                 this.$emit('update:dialogVisible',false);
             })
-        },  clear(){
+        },
+        clear(){
             this.$refs.editForm.resetField();
         }
     }

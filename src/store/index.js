@@ -5,7 +5,8 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    userdata:{"id":"2544","username":"admin","token":"2544","role":0}
+    userdata:{"id":"2544","username":"admin","token":"2544","role":0},
+    activePath:''
   },
   mutations: {
     getUserdata(state,payload)
@@ -14,6 +15,10 @@ export default new Vuex.Store({
       state.userdata={
         id,username,token,role
       }
+    },
+    changeActivePath(state,path)
+    {
+      state.activePath=path;
     }
   },
   actions: {
@@ -23,6 +28,9 @@ export default new Vuex.Store({
   getters:{
     userRole(state){
         return state.userdata.role;
+    },
+    userdata(state){
+      return state.userdata;
     }
   }
 })

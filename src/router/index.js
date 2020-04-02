@@ -3,7 +3,10 @@ import VueRouter from 'vue-router';
 const Login = () => import('views/Login');
 const Home =()=> import('views/Home')
 const Report =()=> import('views/Report')
-const Users =()=> import('views/Users')
+const Admin =()=> import('views/Admin')
+const Users= ()=>import('views/Users')
+const Order=()=>import ('views/Order')
+const Province=()=> import('views/Province')
 Vue.use(VueRouter);
 
 const routes = [
@@ -26,9 +29,21 @@ const routes = [
         {
           path:'report',
           component:Report
-        },{
+        },
+        {
           path:'users',
           component:Users
+        },
+        {
+          path:'admin',
+          component:Admin
+        },{
+          path:'order',
+          component:Order
+        },
+        {
+          path:'province',
+          component:Province
         }
       ]
     }

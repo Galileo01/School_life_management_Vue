@@ -52,10 +52,7 @@ export default {
             menulist: [],
             iconlist: [], //菜单 icon 类名,
             isCollapse: false, //是否折叠
-            userInfo: {
-                username: 'admin',
-                id: '666'
-            }
+           
         };
     },
     computed: {
@@ -72,6 +69,9 @@ export default {
             } else {
                 return '160px';
             }
+        },
+        userInfo(){
+            return this.$store.getters.userdata;
         }
     },
     methods: {
@@ -114,25 +114,19 @@ export default {
                 children: [
                     {
                         id: 101,
+                        authName: '管理员列表',
+                        path: 'home/admin',
+                        children: []
+                    },
+                    {
+                        id: 102,
                         authName: '用户列表',
                         path: 'home/users',
                         children: []
                     }
                 ]
             },
-            {
-                id: 300,
-                authName: '权限管理',
-                path: '',
-                children: [
-                    {
-                        id: 301,
-                        authName: '角色列表',
-                        path: 'home/roles',
-                        children: []
-                    }
-                ]
-            },
+            
             {
                 id: 400,
                 authName: '订单管理',
@@ -155,6 +149,17 @@ export default {
                         id: 501,
                         authName: '数据报表',
                         path: 'home/report',
+                        children: []
+                    },{
+                        id: 503,
+                        authName: '省份管理',
+                        path: 'home/province',
+                        children: []
+                    },
+                    {
+                        id: 504,
+                        authName: '学校管理',
+                        path: 'home/school',
                         children: []
                     }
                 ]
@@ -186,7 +191,6 @@ export default {
         ];
         this.iconlist = [
             'yuangong',
-            'quanxian',
             'order',
             'shuju',
             'ren',

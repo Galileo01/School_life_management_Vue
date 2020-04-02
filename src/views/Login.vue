@@ -110,10 +110,10 @@ export default {
                          window.sessionStorage.setItem('token',this.identifyCode);// 模拟设置 token 
 
                     this.$store.commit('getUserdata',{
-                        username:'admin',
+                        username:this.formData.username,
                             id:this.identifyCode+'',
                             token:this.identifyCode,
-                            role:0
+                            role:this.formData.username==='admin'?0:1
                     });
 
                       this.$router.push('/home');
