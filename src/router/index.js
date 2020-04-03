@@ -6,7 +6,9 @@ const Report =()=> import('views/Report')
 const Admin =()=> import('views/Admin')
 const Users= ()=>import('views/Users')
 const Order=()=>import ('views/Order')
-const Province=()=> import('views/Province')
+const ProAndSch=()=> import('views/ProAndSch')
+const Profile =()=>import('views/Profile')
+const About = ()=>import('views/About')
 Vue.use(VueRouter);
 
 const routes = [
@@ -42,8 +44,16 @@ const routes = [
           component:Order
         },
         {
-          path:'province',
-          component:Province
+          path:'pro&sch',
+          component:ProAndSch
+        },
+        {
+          path:'profile',
+          component:Profile
+        },
+        {
+          path:'about',
+          component:About
         }
       ]
     }

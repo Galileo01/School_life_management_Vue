@@ -25,7 +25,9 @@ import {
     Pagination,
     Switch,
     Select,
-    Option
+    Option,
+    Upload,
+    Radio
  } from 'element-ui';
 
 
@@ -54,5 +56,7 @@ Vue.use(Pagination)
 Vue.use(Switch)
 Vue.use(Select)
 Vue.use(Option)
+Vue.use(Upload)
+Vue.use(Radio)
 Vue.prototype.$message = Message;
 Vue.prototype.$confirm=MessageBox.confirm;

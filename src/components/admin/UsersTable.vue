@@ -52,8 +52,10 @@
 </template>
 
 <script>
+import {roleMixin} from 'commonjs/mixin'
 export default {
     name: 'UsersTable',
+    mixins:[roleMixin],
     props: {
         users: Array
     },
@@ -61,13 +63,10 @@ export default {
         return {};
     },
     computed: {
-        UserRole() {
-            return this.$store.getters.userRole;
-        }
     },
     methods: {
         edit(id) {
-            if (this.UserRole!==0) {
+            if (this.userRole!==0) {
                 this.$message.error('无法继续操作，你的权限太低');
                 return;
             }
@@ -77,7 +76,7 @@ export default {
         },
 
         deleteFun(id) {
-            if ( this.UserRole!==0 ) {
+            if ( this.userRole!==0 ) {
                 this.$message.error('无法继续操作，你的权限太低');
                 return;
             }
@@ -86,7 +85,7 @@ export default {
             });
         },
         allocate(id) {
-            if (this.UserRole !==0) {
+            if (this.userRole !==0) {
                 this.$message.error('无法分配权限，你的权限太低');
                 return;
             }

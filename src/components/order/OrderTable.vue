@@ -6,8 +6,8 @@
         <el-table-column label="用户编号" prop="userID"></el-table-column>
         <el-table-column label="联系方式" prop="contact"></el-table-column>
         <el-table-column label="类型"
-            ><template v-slot="{ row }">
-                <span>{{ Type(row.type) }}</span>
+            ><template >
+                <span>{{ type }}</span>
             </template></el-table-column
         >
         <el-table-column label="创建时间" prop="ge_time"></el-table-column>
@@ -16,9 +16,12 @@
                 <el-button
                     type="danger"
                     icon="el-icon-delete"
-                    @click="deleteFun(row.id)"
+                    @click="deleteFun(row.orderID)"
                     size="mini"
                 ></el-button>
+                <el-tooltip  content="查看更多信息" placement="top" effect="light" >
+                    <el-button size="mini" icon="el-icon-view" type="primary" @click="$emit('showmore',row.orderID)"></el-button>
+                </el-tooltip>
             </template>
         </el-table-column>
     </el-table>
@@ -28,25 +31,19 @@
 export default {
     name: 'OrderTable',
     props: {
-        orderlist: Array
+        orderlist: Array,
+        type:String
     },
     data() {
         return {};
     },
-    computed: {},
+    computed: {
+        
+    },
+    filters:{
+        
+    },
     methods: {
-        Type(type) {
-            switch (type) {
-                case 'lostFound':
-                    return '失物招领';
-                case 'help':
-                    return '帮帮贴';
-                case 'partTime':
-                    return '兼职';
-                case 'second':
-                    return '二手';
-            }
-        },
         async deleteFun(id) {
             const result = await this.$confirm('此操作将删除该订单, 是否继续?', '提示', {
                 confirmButtonText: '确定',

@@ -88,7 +88,7 @@ export default {
             console.log(result);
 
             if (result === 'cancel') {
-                this.$message.info('操作取消');
+                this.$message.info('退出操作取消');
             } else {
                 window.sessionStorage.removeItem('token');
                 this.$router.push('/login');
@@ -99,7 +99,7 @@ export default {
             this.isCollapse = !this.isCollapse;
         },
         goProfile() {
-            this.$router.push(`/home/person_info:${this.userInfo.id}`);
+            this.$router.push(`/home/profile`);
         }
     },
     components: {
@@ -152,14 +152,8 @@ export default {
                         children: []
                     },{
                         id: 503,
-                        authName: '省份管理',
-                        path: 'home/province',
-                        children: []
-                    },
-                    {
-                        id: 504,
-                        authName: '学校管理',
-                        path: 'home/school',
+                        authName: '省份学校',
+                        path: 'home/pro&sch',
                         children: []
                     }
                 ]
@@ -172,7 +166,7 @@ export default {
                     {
                         id: 701,
                         authName: '信息修改',
-                        path: 'home/location',
+                        path: 'home/profile',
                         children: []
                     }]
             },{
@@ -256,6 +250,7 @@ export default {
     background-color: #eaedf1;
     // border-left: 1px solid #d2d6de;
     padding: 10px;
+    
 }
 .left-wapper {
     margin-right: 10px;
