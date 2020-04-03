@@ -10,11 +10,6 @@
                 {{ roleText(row.role) }}
             </template>
         </el-table-column>
-        <el-table-column label="状态">
-            <template v-slot="{ row }">
-                <el-switch v-model="row.state"></el-switch>
-            </template>
-        </el-table-column>
         <el-table-column label="操作" width="180px">
             <template v-slot="{ row }">
                 <el-button

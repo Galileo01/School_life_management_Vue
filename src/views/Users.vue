@@ -40,16 +40,11 @@
             >
             </el-pagination>
         </el-card>
-        <!--添加用户 的对话框-->
-        <add-dialog :dialogVisible.sync="adddialogVisible"></add-dialog>
         <edit-dialog
             :dialogVisible.sync="editdialogVisible"
             :userdata="operatingUser"
         ></edit-dialog>
-        <set-role-dialog
-            :dialogVisible.sync="setdialogVisible"
-            :user="operatingUser"
-        ></set-role-dialog>
+       
     </div>
 </template>
 
@@ -70,7 +65,6 @@ export default {
             users: [],
             //
             total: 0,
-            adddialogVisible: false,
             editdialogVisible: false,
             setdialogVisible: false,
             operateID: 0 //将要 操作的 用户id

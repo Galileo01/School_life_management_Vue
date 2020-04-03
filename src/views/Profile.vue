@@ -5,7 +5,7 @@
             <el-row>
                 <el-col :span="10" :offset="5">
                     <el-form :model="userdata" ref="form" :rules="rules">
-                        <el-form-item label="管理员用户名" prop="account">
+                        <el-form-item label="用户名" prop="account">
                             <el-input v-model="userdata.account"></el-input>
                         </el-form-item>
                         <el-form-item label="密码" prop="password">

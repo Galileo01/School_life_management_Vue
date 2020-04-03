@@ -36,10 +36,14 @@ export default new Vuex.Store({
     modules: {},
     getters: {
         userRole(state) {
-            return state.userdata.role;
+            return state.userdata.Role;
         },
         userdata(state) {
             return state.userdata;
+        },
+        activePath(state)
+        {
+            return state.activePath;
         }
     }
 });

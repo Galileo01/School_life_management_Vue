@@ -38,8 +38,12 @@ export default {
     name: 'HomeAsideMenu',
     data() {
         return {
-            activePath: '' // 选中的 menu对于的path
         };
+    },
+    computed:{
+        activePath(){
+            return this.$store.getters.activePath;
+        }
     },
     props: {
         menulist: Array, //侧边栏 菜单
@@ -50,13 +54,11 @@ export default {
         savePath(path) {
             window.sessionStorage.setItem('activePath', '/' + path);
             this.$store.commit('changeActivePath', '/' + path);
-            this.activePath = '/' + path;
         },
         getActivePath() {
             const path = sessionStorage.getItem('activePath');
             if (path) {
-                this.activePath = path;
-                this.$store.commit('changeActivePath', '/' + path);
+                this.$store.commit('changeActivePath', path);
             }
         }
     },
