@@ -7,10 +7,9 @@
         v-if="Object.keys(user).length > 0"
     >
         <div>
-            <p>用户名称 ：{{ user.username }}</p>
+            <p>用户名称 ：{{ user.account }}</p>
             <p>
-                用户旧角色 ：<span v-if="user.role === 0">系统管理员</span>
-                <span v-else>普通管理员</span>
+                用户旧角色 ：{{roleText(user.Role)}}
             </p>
             分配的新角色<el-select v-model="selectedId" placeholder="请选择">
                 <el-option
@@ -33,16 +32,17 @@
 </template>
 
 <script>
+import {updateRole} from 'network/admin'
 export default {
     name: 'SetRoleDialog',
     data() {
         return {
             roleslist: [
                 {
-                    value: 0,
-                    label: '系统管理员'
+                    value: 30,
+                    label: '高级管理员'
                 },
-                { value: 1, label: '普通管理员' }
+                { value: 2, label: '普通管理员' }
             ],
             selectedId: ''
         };
@@ -57,10 +57,32 @@ export default {
         }
     },
     methods: {
-        submit(){
+       async submit(){
+           if(this.selectedId==='')
+           return this.$message.error('请选择新分配的权限');
+         const res= await updateRole(this.user.account,this.selectedId);
+         if(res.status===200)
+         {
+                 this.$message.success('权限分配成功');  
+                 this.$emit('allocateSuccess');
+         }
+         else{
+             this.$message.error('权限分配失败');
+             
+         }
            
-           this.$message.success('角色分配成功');
            
+        },
+        roleText(role) {
+            switch(role)
+            {
+                case 3:
+                return '普通管理员';
+                case 31:
+                return '高级管理员';
+                case 63:
+                return '系统管理员';
+            }
         }
     },
     created() {

@@ -3,13 +3,22 @@
         <BreadNav :texts="['个人设置', '信息修改']" />
         <el-card>
             <el-row>
-                <el-col :span="10" :offset="5">
+                <el-col :span="10" :offset="1">
                     <el-form :model="userdata" ref="form" :rules="rules">
                         <el-form-item label="用户名" prop="account">
                             <el-input v-model="userdata.account"></el-input>
                         </el-form-item>
-                        <el-form-item label="密码" prop="password">
-                            <el-input v-model="userdata.password" type="password"></el-input>
+                        <el-form-item
+                            label="密码"
+                            prop="password"
+                            class="edit-pass"
+                        >
+                            <el-button
+                                type="primary"
+                                size="medium"
+                                @click="dialogVisible = true"
+                                >修改密码</el-button
+                            >
                         </el-form-item>
                         <el-form-item label="微信" prop="wechat">
                             <el-input v-model="userdata.wechat"></el-input
@@ -32,11 +41,42 @@
                 </el-col>
             </el-row>
         </el-card>
+        <el-dialog
+            :visible.sync="dialogVisible"
+            title="修改密码"
+            width="40%"
+            @close="clear"
+            @keyup.enter.native="submitPassEdit"
+        >
+            <div class="input-wa">
+                <span>旧密码</span>
+                <el-input
+                    v-model="passwords.old"
+                    type="password"
+                    show-password
+                ></el-input>
+            </div>
+            <div class="input-wa">
+                <span>新密码</span
+                ><el-input
+                    v-model="passwords.thenew"
+                    type="password"
+                    show-password
+                ></el-input>
+            </div>
+            <span slot="footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="submitPassEdit"
+                    >确 定</el-button
+                >
+            </span>
+        </el-dialog>
     </div>
 </template>
 
 <script>
 import { emailCheck, mobileCheck } from 'commonjs/utils';
+import { updateBaseInfo, changePassword } from 'network/profile';
 export default {
     name: 'Profile',
     data() {
@@ -79,6 +119,11 @@ export default {
                         trigger: 'blur'
                     }
                 ]
+            },
+            dialogVisible: false,
+            passwords: {
+                old: '',
+                thenew: ''
             }
         };
     },
@@ -86,8 +131,41 @@ export default {
         reset() {
             this.$refs.form.resetFields();
         },
-        submit() {
-            this.$message.success('信息更新成功');
+        clear() {
+            this.passwords = {
+                old: '',
+                thenew: ''
+            };
+        },
+        async submit() {
+            const res = await updateBaseInfo(this.userdata);
+            // console.log(res);
+            
+            if (res.status === 200) {
+                this.$message.success('信息更新成功');
+            }
+            else{
+                this.$message.error('信息更新失败');
+                
+            }
+        },
+        async submitPassEdit() {
+            const { old, thenew } = this.passwords;
+            if (old === '' || thenew === '')
+                return this.$message.info('请输入旧密码和新密码');
+            if (old !== this.userdata.password)
+                return this.$message.error('旧密码错误');
+
+            const res = await changePassword(thenew);
+            if (res.status === 200) {
+                this.$message.success('密码修改成功');
+                this.dialogVisible = false;
+                console.log('asdasd', this.dialogVisible);
+
+                this.$store.commit('changePass', thenew);
+            } else {
+                this.$message.error('密码修改失败');
+            }
         }
     },
     beforeDestroy() {
@@ -127,6 +205,23 @@ export default {
         display: -webkit-box;
         justify-content: end;
         margin-top: 10px;
+    }
+    .edit-pass {
+        // height:50px;
+        margin-top: 5px;
+        display: flex;
+        align-content: center;
+    }
+    .input-wa {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        span {
+            margin-right: 20px;
+        }
+        .el-input {
+            width: 200px;
+        }
     }
 }
 </style>

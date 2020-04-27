@@ -1,14 +1,14 @@
 <template>
-    <el-table border stripe :data="users">
+    <el-table border stripe :data="users" size="small">
         <el-table-column type="index"></el-table-column>
-         <el-table-column label="用户ID" prop="id"></el-table-column>
-        <el-table-column label="用户名" prop="username"></el-table-column>
-        <el-table-column label="微信" prop="wx"></el-table-column>
-        <el-table-column label="电话" prop="mobile"></el-table-column>
+         <el-table-column label="用户ID" prop="userID" width="300px"></el-table-column>
+        <el-table-column label="用户名" prop="account"></el-table-column>
+        <el-table-column label="微信" prop="wechat"></el-table-column>
+        <el-table-column label="电话" prop="tel"></el-table-column>
         
         <el-table-column label="状态">
             <template v-slot="{ row }">
-                <el-switch v-model="row.state"></el-switch>
+                <el-switch v-model="row.state" @change="_updateState(row.userID,row.state)"></el-switch>
             </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -17,14 +17,14 @@
                     type="primary"
                     icon="el-icon-edit"
                     size="mini"
-                    @click="edit(row.id)"
+                    @click="edit(row.userID)"
 
                 >
                 </el-button>
                 <el-button
                     type="danger"
                     icon="el-icon-delete"
-                    @click="deleteFun( row.id)"
+                    @click="deleteFun( row.userID)"
                     size="mini"
                 ></el-button>
             </template>
@@ -33,8 +33,11 @@
 </template>
 
 <script>
+import {roleMixin} from 'commonjs/mixin'
+import {updateState } from 'network/users'
 export default {
     name: 'UsersTable',
+    mixins:[roleMixin],
     props: {
         users: Array
     },
@@ -48,17 +51,15 @@ export default {
     },
     methods: {
         edit(id) {
-            if (this.UserRole!==0) {
+            if (this.userRole===3) {
                 this.$message.error('无法继续操作，你的权限太低');
                 return;
             }
-            this.$emit('edit', id);
-
-            
+            this.$emit('edit', id);  
         },
 
-        deleteFun(id) {
-            if ( this.UserRole!==0 ) {
+      deleteFun(id) {
+            if(this.userRole===3) {
                 this.$message.error('无法继续操作，你的权限太低');
                 return;
             }
@@ -85,10 +86,16 @@ export default {
                 }
             });
         },
-        roleText(role) {
-            if (role === 0) {
-                return '系统管理员';
-            } else return '普通管理员';
+       async _updateState(ID,newstate)
+        {
+            console.log(newstate,ID);
+            const res= await updateState(newstate,ID);
+            if(res.status!==200)
+            this.$message.error('状态更新失败');
+            else{
+                this.$message.success('状态更新成功');
+                
+            }
         }
     }
 };

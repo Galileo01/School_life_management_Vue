@@ -27,7 +27,8 @@ import {
     Select,
     Option,
     Upload,
-    Radio
+    Radio,
+    Tag
  } from 'element-ui';
 
 
@@ -58,5 +59,6 @@ Vue.use(Select)
 Vue.use(Option)
 Vue.use(Upload)
 Vue.use(Radio)
+Vue.use(Tag)
 Vue.prototype.$message = Message;
 Vue.prototype.$confirm=MessageBox.confirm;

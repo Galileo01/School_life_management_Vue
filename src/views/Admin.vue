@@ -1,7 +1,7 @@
 <template>
     <div class="admin">
         <el-breadcrumb separator-class="el-icon-arrow-right">
-            <BreadNav :texts="['用户管理','管理员列表']"/>
+            <BreadNav :texts="['用户管理', '管理员列表']" />
         </el-breadcrumb>
         <el-card>
             <!-- 搜索-->
@@ -11,16 +11,17 @@
                         placeholder="请输入内容"
                         clearable
                         v-model="queryInfo.query"
-                        @keyup.enter.native="_getUsers"
+                        @keyup.enter.native="getUsers"
                     >
                         <el-button
                             slot="append"
                             icon="el-icon-search"
+                            @click="getUsers"
                         ></el-button>
                     </el-input>
                 </el-col>
-                <el-col :span="4">
-                    <el-button type="primary" @click="adddialogVisible = true"
+                <el-col :span="4" v-if="userRole===63">
+                    <el-button type="primary" @click="addClick"
                         >添加管理员</el-button
                     >
                 </el-col>
@@ -45,14 +46,19 @@
             </el-pagination>
         </el-card>
         <!--添加用户 的对话框-->
-        <add-dialog :dialogVisible.sync="adddialogVisible"></add-dialog>
+        <add-dialog
+            :dialogVisible.sync="adddialogVisible"
+            @addsuccess="addsuccess"
+        ></add-dialog>
         <edit-dialog
             :dialogVisible.sync="editdialogVisible"
             :userdata="operatingUser"
+            @editSuccess="editSuccess"
         ></edit-dialog>
         <set-role-dialog
             :dialogVisible.sync="setdialogVisible"
             :user="operatingUser"
+            @allocateSuccess="allocateSuccess"
         ></set-role-dialog>
     </div>
 </template>
@@ -62,15 +68,18 @@ import UsersTable from 'components/admin/UsersTable';
 import AddDialog from 'components/admin/AddDialog';
 import EditDialog from 'components/admin/EditDialog';
 import SetRoleDialog from 'components/admin/SetRoleDialog';
+import { getAdmin, removeAdmin } from 'network/admin';
+import { roleMixin } from 'commonjs/mixin';
 export default {
     name: 'Admin',
+    mixins: [roleMixin],
     data() {
         return {
             //  获取用户数据 的传入参数
             queryInfo: {
                 query: '',
                 pagenum: 1,
-                pagesize: 2
+                pagesize: 5
             },
             //所有 用户
             users: [],
@@ -84,65 +93,48 @@ export default {
     },
     computed: {
         operatingUser() {
-            const temp = this.users.find(val => val.id === this.operateID);
+            if (this.users.length === 0) return;
+            const temp = this.users.find(val => val.ID === this.operateID);
             return temp;
         }
     },
     methods: {
-        handleSizeChange() {},
-        handleCurrentChange() {},
-        getUsers() {
-            this.users = [
-                {
-                    username: 'admin',
-                    id: 222,
-                    wx: '1111111',
-                    mobile: '1233456t7',
-                    role: 0,
-                    state: true
-                },
-                {
-                    username: 'sdasd',
-                    id: 123,
-                    wx: '222222',
-                    mobile: '1233456t7',
-                    role: 1,
-                    state: true
-                },
-                {
-                    username: 'gddgfgd',
-                    id: 345,
-                    wx: '245245252',
-                    mobile: '1233456t7',
-                    role: 1,
-                    state: true
-                },
-                {
-                    username: 'fhfghfgh',
-                    id: 5556,
-                    wx: '11114567573111',
-                    mobile: '1233456t7',
-                    role: 1,
-                    state: true
-                },
-                {
-                    username: 'lllll',
-                    id: 888,
-                    wx: '1581111145646',
-                    mobile: '1233456t7',
-                    role: 1,
-                    state: true
-                }
-            ];
+        handleSizeChange(size) {
+            this.queryInfo.pagesize = size;
+            this.getUsers();
+        },
+        handleCurrentChange(page) {
+            // console.log(page);
+
+            this.queryInfo.pagenum = page;
+            this.getUsers();
+        },
+        async getUsers() {
+            const res = await getAdmin(
+                this.queryInfo.query,
+                this.queryInfo.pagenum,
+                this.queryInfo.pagesize
+            );
+            console.log(res);
+
+            if (res.status === 200) {
+                const items = res.data.items;
+                this.users = items.length > 0 ? items : this.users; //如果 获取的数据长度 不为空
+                this.total = items.length > 0 ? res.data.total : this.total;
+                if(items.length===0&&this.queryInfo.query!=='')
+                this.$message.info('没有查找到对应名称的管理员');
+                
+            }
         },
         edit(id) {
             this.operateID = id;
             this.editdialogVisible = true;
         },
-        async deleteFun({ role, id }) {
-            console.log(id);
+        //MARK: 删除 管理员报错
+        async deleteFun(account) {
+            // console.log(account);
 
-            if (role === 0 && this.UserRole > role) {
+            if (account === 'superadmin' || this.userRole !== 63) {
                 this.$message.error('无法删除系统管理员，你的权限太低');
                 return;
             }
@@ -158,14 +150,38 @@ export default {
 
             if (result === 'cancel') this.$message.info('成功取消操作');
             else {
-                const index = this.users.findIndex(val => val.id === id);
-                this.users.splice(index, 1);
-                this.$message.success('成功删除用户');
+                const res = await removeAdmin(account);
+                if (res.status === 200) {
+                    this.$message.success('成功删除管理员');
+                    this.getUsers();
+                } else {
+                    this.$message.error('管理员删除失败');
+                }
             }
         },
         allocate(id) {
             this.setdialogVisible = true;
             this.operateID = id;
+            console.log(id);
+        },
+        addsuccess() {
+            this.adddialogVisible = false;
+            this.getUsers();
+        },
+        editSuccess() {
+            this.editdialogVisible = false;
+            this.getUsers();
+        },
+        allocateSuccess() {
+            this.setdialogVisible = fasle;
+            this.getUsers();
+        },
+        addClick() {
+            if (this.userRole !== 63) {
+                this.$message.error('无法新建管理员，你的权限太低');
+                return;
+            }
+            this.adddialogVisible = true;
         }
     },
     created() {

@@ -1,22 +1,17 @@
 <template>
-    <el-table border stripe :data="orderlist">
+    <el-table border stripe :data="orderlist" v-if="Object.keys(orderlist).length!==0" size="small">
         <el-table-column type="index"></el-table-column>
-        <el-table-column label="订单编号" prop="orderID"></el-table-column>
+        <el-table-column label="订单编号" :prop="orderID"></el-table-column>
         <el-table-column label="标题" prop="title"></el-table-column>
-        <el-table-column label="用户编号" prop="userID"></el-table-column>
-        <el-table-column label="联系方式" prop="contact"></el-table-column>
-        <el-table-column label="类型"
-            ><template >
-                <span>{{ type }}</span>
-            </template></el-table-column
-        >
-        <el-table-column label="创建时间" prop="ge_time"></el-table-column>
+        <el-table-column label="发布用户" prop="userName"></el-table-column>
+        <el-table-column label="联系方式" prop="TEL"></el-table-column>
+        <el-table-column label="创建时间" prop="createTime"></el-table-column>
         <el-table-column label="操作" width="180px">
             <template v-slot="{ row }">
                 <el-button
                     type="danger"
                     icon="el-icon-delete"
-                    @click="deleteFun(row.orderID)"
+                    @click="$emit('remove',row[orderID])"
                     size="mini"
                 ></el-button>
                 <el-tooltip  content="查看更多信息" placement="top" effect="light" >
@@ -38,28 +33,16 @@ export default {
         return {};
     },
     computed: {
-        
+       orderID(){
+           
+         return  this.orderlist[0].id?'id':this.type+'PostID'
+       }
     },
     filters:{
         
     },
     methods: {
-        async deleteFun(id) {
-            const result = await this.$confirm('此操作将删除该订单, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).catch(error => error);
-
-        if(result==='cancel')
-        {
-            this.$message.info('操作取消');
-        }
-        else{
-            this.$message.success('订单成功删除');
-            
-        }
-        }
+        
     }
 };
 </script>

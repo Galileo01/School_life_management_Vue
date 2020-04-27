@@ -4,7 +4,7 @@
         <el-card>
             <el-row>
                 <el-col :span="4"
-                    ><el-select v-model="listType">
+                    ><el-select v-model="listType" @change="getData">
                         <el-option
                             v-for="(item, index) in typelist"
                             :key="index"
@@ -32,7 +32,8 @@
             <OrderTable
                 :orderlist="showOrderlist"
                 @showmore="showMore"
-                :type="typeText"
+                :type="listType"
+                @remove="deleteFun"
             />
             <el-pagination
                 @size-change="handleSizeChange"
@@ -56,20 +57,53 @@
             >
             <el-row
                 ><el-col :span="4">用户名</el-col>
-                <el-col :span="8">{{getdetailUSer()}}</el-col></el-row
+                <el-col :span="8">{{ getdetailUSer() }}</el-col></el-row
             >
             <el-row
                 ><el-col :span="4">订单类型</el-col>
-                <el-col :span="8">{{typeText}}</el-col></el-row
+                <el-col :span="8">{{ typeText }}</el-col></el-row
             >
-            <el-row><el-col :span="4">订单内容</el-col> <el-col :span="20">{{detailInfo.content}}</el-col></el-row>
-            <el-row><el-col :span="4">订单备注</el-col> <el-col :span="20">{{detailInfo.commont|comment}}</el-col></el-row>
+            <el-row
+                ><el-col :span="4">订单内容</el-col>
+                <el-col :span="20">{{ detailInfo.content }}</el-col></el-row
+            >
+            <el-row
+                ><el-col :span="4">标签</el-col>
+                <el-col :span="20"
+                    ><el-tag
+                        v-for="(item, index) in detailInfo.tag"
+                        :key="index"
+                        >{{ item }}</el-tag
+                    ></el-col
+                ></el-row
+            >
+            <el-row v-if="detailInfo.price"
+                ><el-col :span="4">订单价格</el-col>
+                <el-col :span="20">￥{{ detailInfo.price }}</el-col></el-row
+            >
+            <el-row
+                ><el-col :span="4">订单备注</el-col>
+                <el-col :span="20">{{
+                    detailInfo.commont | comment
+                }}</el-col></el-row
+            >
         </el-dialog>
     </div>
 </template>
 
 <script>
 import OrderTable from 'components/order/OrderTable';
+import { addHelp, addLost, addPartTime, addSec } from 'network/order.js';
+import {
+    getHelp,
+    getLost,
+    getPartime,
+    getSec,
+    deleteHelp,
+    deleteLost,
+    deletePart,
+    deleteSec
+} from 'network/order.js';
 export default {
     name: 'Order',
     data() {
@@ -81,25 +115,25 @@ export default {
                 },
                 { value: 'help', label: '帮帮贴' },
                 { value: 'partTime', label: '兼职' },
-                { value: 'second', label: '二手' }
+                { value: 'secondary', label: '二手' }
             ],
             queryInfo: {
-                page: 0,
-                size: 5,
+                page: 1,
+                size: 10,
                 total: 0
             },
             queryTitle: '',
 
-            listType: 'lostFound',
+            listType: 'lostFound', //默认失物招领
             orderlist: [], //  某一类型的总列表
             showOrderlist: [], //根据 搜索title 过滤的列表
             detailVisible: false,
             detailID: -1
         };
     },
-    filters:{
-        comment(val){
-            return val?val:'无';
+    filters: {
+        comment(val) {
+            return val ? val : '无';
         }
     },
     computed: {
@@ -107,91 +141,54 @@ export default {
             if (this.detailID === -1) return;
             return this.showOrderlist.find(val => val.orderID == this.detailID);
         },
-        typeText(){
-             switch (this.listType) {
+        typeText() {
+            switch (this.listType) {
                 case 'lostFound':
                     return '失物招领';
                 case 'help':
                     return '帮帮贴';
                 case 'partTime':
                     return '兼职';
-                case 'second':
+                case 'secondary':
                     return '二手';
             }
-            }
+        }
     },
     methods: {
-        getData() {
-            this.orderlist = [
-                {
-                    orderID: 123,
-                    userID: 222,
-                    title: '失物失物01',
-                    ge_time: '2019-07-14',
-                    type: 'lostFound',
-                    contact: '15745632807',
-                    content:'4月1日，在美国首都华盛顿，一名男子在华盛顿纪念碑附近跑步。根据美国约翰斯·霍普金斯大学最新数据，截至当地时间4月1日22时（北京时间4月2日10时），美国新冠肺炎确诊病例已超21.3万例，死亡病例超过4700例。'
-                },
-                {
-                    orderID: 555,
-                    userID: 54,
-                    title: '失物失物03',
-                    ge_time: '2019-07-14',
-                    type: 'lostFound',
-                    contact: '15745632807',
-                     content:'4月1日，在美国首都华盛顿，一名男子在华盛顿纪念碑附近跑步。根据美国约翰斯·霍普金斯大学最新数据，截至当地时间4月1日22时（北京时间4月2日10时），美国新冠肺炎确诊病例已超21.3万例，死亡病例超过4700例。'
-                },
-                {
-                    orderID: 656,
-                    userID: 444,
-                    title: '失物失物fff',
-                    ge_time: '2019-07-14',
-                    type: 'help',
-                    contact: '15745632807', content:'4月1日，在美国首都华盛顿，一名男子在华盛顿纪念碑附近跑步。根据美国约翰斯·霍普金斯大学最新数据，截至当地时间4月1日22时（北京时间4月2日10时），美国新冠肺炎确诊病例已超21.3万例，死亡病例超过4700例。'
-                },
-                {
-                    orderID: 678,
-                    userID: 134,
-                    title: '失物失物招领',
-                    ge_time: '2019-07-14',
-                    type: 'lostFound',
-                    contact: '15745632807', content:'4月1日，在美国首都华盛顿，一名男子在华盛顿纪念碑附近跑步。根据美国约翰斯·霍普金斯大学最新数据，截至当地时间4月1日22时（北京时间4月2日10时），美国新冠肺炎确诊病例已超21.3万例，死亡病例超过4700例。'
-                },
-                {
-                    orderID: 999,
-                    userID: 78,
-                    title: '失物失物招领',
-                    ge_time: '2019-07-14',
-                    type: 'lostFound',
-                    contact: '15745632807', content:'4月1日，在美国首都华盛顿，一名男子在华盛顿纪念碑附近跑步。根据美国约翰斯·霍普金斯大学最新数据，截至当地时间4月1日22时（北京时间4月2日10时），美国新冠肺炎确诊病例已超21.3万例，死亡病例超过4700例。'
-                },
-                {
-                    orderID: 274,
-                    userID: 1659,
-                    title: '失物失物招领',
-                    ge_time: '2019-07-14',
-                    type: 'lostFound',
-                    contact: '15745632807', content:'4月1日，在美国首都华盛顿，一名男子在华盛顿纪念碑附近跑步。根据美国约翰斯·霍普金斯大学最新数据，截至当地时间4月1日22时（北京时间4月2日10时），美国新冠肺炎确诊病例已超21.3万例，死亡病例超过4700例。'
-                },
-                {
-                    orderID: 159,
-                    userID: 157,
-                    title: '失物失物招领',
-                    ge_time: '2019-07-14',
-                    type: 'lostFound',
-                    contact: '15745632807', content:'4月1日，在美国首都华盛顿，一名男子在华盛顿纪念碑附近跑步。根据美国约翰斯·霍普金斯大学最新数据，截至当地时间4月1日22时（北京时间4月2日10时），美国新冠肺炎确诊病例已超21.3万例，死亡病例超过4700例。'
-                },
-                {
-                    orderID: 4456,
-                    userID: 223242342,
-                    title: '失物失物招领',
-                    ge_time: '2019-07-14',
-                    type: 'lostFound',
-                    contact: '15745632807', content:'4月1日，在美国首都华盛顿，一名男子在华盛顿纪念碑附近跑步。根据美国约翰斯·霍普金斯大学最新数据，截至当地时间4月1日22时（北京时间4月2日10时），美国新冠肺炎确诊病例已超21.3万例，死亡病例超过4700例。'
-                }
-            ];
-            this.showOrderlist = this.orderlist;
-            this.queryInfo = { page: 0, size: 5, total: 25 };
+        async getData() {
+            let res = [];
+            const { page, size } = this.queryInfo;
+            switch (this.listType) {
+                case 'lostFound':
+                    res = await getLost(page, size);
+                    break;
+                case 'help':
+                    res = await getHelp(page, size);
+                    break;
+                case 'partTime':
+                    res = await getPartime(page, size);
+                    break;
+                case 'secondary':
+                    res = await getSec(page, size);
+                    break;
+            }
+            console.log(res);
+
+            if (res.status === 200) {
+                this.orderlist = res.data.items;
+                this.queryInfo.total = res.data.total;
+            } else {
+                this.$message.error('订单获取失败');
+                return;
+            }
+
+            //过滤 包含 queryTitle字符串的 订单
+            this.showOrderlist =
+                this.queryTitle === ''
+                    ? this.orderlist
+                    : this.orderlist.filters(val =>
+                          val.title.includes(this.queryTitle)
+                      );
         },
         find() {
             if (!this.queryTitle) {
@@ -215,11 +212,79 @@ export default {
             this.detailID = id;
             this.detailVisible = true;
         },
-        getdetailUSer(){
+        getdetailUSer() {
             return 'ltt';
         },
-        handleSizeChange() {},
-        handleCurrentChange() {}
+        handleSizeChange(size) {
+            this.queryInfo.size = size;
+            this.getData();
+            console.log(size);
+        },
+        handleCurrentChange(page) {
+            this.queryInfo.page = page;
+            this.getData();
+            console.log(page);
+        },
+        async deleteFun(id) {
+            const result = await this.$confirm(
+                '此操作将删除该订单, 是否继续?',
+                '提示',
+                {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }
+            ).catch(error => error);
+
+            if (result === 'cancel') {
+                this.$message.info('操作取消');
+            } else {
+                let res = [];
+                switch (this.listType) {
+                    case 'lostFound':
+                        res = await deleteLost(id);
+                        break;
+                    case 'help':
+                        res = await deleteHelp(id);
+                        break;
+                    case 'partTime':
+                        res = await deletePart(id);
+                        break;
+                    case 'secondary':
+                        res = await deleteSec(id);
+                        break;
+                }
+                if (res.status === 200) {
+                    this.$message.success('订单成功删除');
+                    this.getData();
+                } else {
+                    this.$message.error('订单删除失败');
+                }
+            }
+        },
+        async test() {
+            const Tel = '2222333333';
+            const content = '二手二手';
+            const tag = 'help';
+            const title = '这是二手二手';
+            const userID = 34;
+
+            for (let i = 0; i < 20; i++) {
+                const params = {
+                    TEL: Tel + i,
+                    content: content + i,
+                    tag: [tag + i],
+                    title: title + i,
+                    userID: userID + i * 3 + '',
+                    note: 'note' + i,
+                    picture: ['picture' + i],
+                    userName: userID + i * 3 + '',
+                    price: 66.66
+                };
+                const res = await addSec(params);
+                console.log(res);
+            }
+        }
     },
     created() {
         this.getData();

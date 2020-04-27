@@ -18,7 +18,7 @@
                                 alt=""
                             />
                         </el-tooltip>
-                        <span>{{ userInfo.username }}</span>
+                        <span>{{ account }}</span>
                     </div>
                     <el-button size="mini" type="danger" @click="logout"
                         >退出</el-button
@@ -44,8 +44,10 @@
 
 <script>
 import HomeAsideMenu from 'components/home/HomeAsideMenu';
+import {roleMixin} from 'commonjs/mixin'
 export default {
     name: 'Home',
+    mixins:[roleMixin],
     data() {
         return {
             //侧边栏 菜单
@@ -72,7 +74,8 @@ export default {
         },
         userInfo(){
             return this.$store.getters.userdata;
-        }
+        },
+        
     },
     methods: {
         async logout() {
@@ -90,7 +93,7 @@ export default {
             if (result === 'cancel') {
                 this.$message.info('退出操作取消');
             } else {
-                window.sessionStorage.removeItem('token');
+                window.localStorage.removeItem('token');
                 this.$router.push('/login');
                 this.$message.success('成功退出');
             }
@@ -106,7 +109,7 @@ export default {
         HomeAsideMenu
     },
     created() {
-        this.menulist = [
+          const superadmin = [
             {
                 id: 100,
                 authName: '用户管理',
@@ -183,6 +186,86 @@ export default {
             }
     
         ];
+        // const secend=[];
+        const third=[
+            {
+                id: 100,
+                authName: '用户管理',
+                path: '',
+                children: [
+                   
+                    {
+                        id: 102,
+                        authName: '用户列表',
+                        path: 'home/users',
+                        children: []
+                    }
+                ]
+            },
+            
+            {
+                id: 400,
+                authName: '订单管理',
+                path: '',
+                children: [
+                    {
+                        id: 401,
+                        authName: '订单列表',
+                        path: 'home/order',
+                        children: []
+                    }
+                ]
+            },
+            {
+                id: 500,
+                authName: '数据管理',
+                path: '',
+                children: [
+                    {
+                        id: 501,
+                        authName: '数据报表',
+                        path: 'home/report',
+                        children: []
+                    },{
+                        id: 503,
+                        authName: '省份学校',
+                        path: 'home/pro&sch',
+                        children: []
+                    }
+                ]
+            },
+            {
+                id: 700,
+                authName: '个人设置',
+                path: '',
+                children: [
+                    {
+                        id: 701,
+                        authName: '信息修改',
+                        path: 'home/profile',
+                        children: []
+                    }]
+            },{
+                id: 800,
+                authName: '其他',
+                path: '',
+                children: [
+                    {
+                        id: 801,
+                        authName: '关于',
+                        path: 'home/about',
+                        children: []
+                    }]
+            }
+    
+        ];
+        if(this.userRole==3)
+        {
+            this.menulist=third;
+        }
+        else 
+        this.menulist=superadmin;
+        // if(this.userRole)//根据劝降 控制 侧边栏的 结构
         this.iconlist = [
             'yuangong',
             'order',

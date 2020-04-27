@@ -4,18 +4,18 @@
         :visible="dialogVisible"
         @update:visible="$emit('update:dialogVisible', false)"
         width="600px"
-        v-if="Object.keys(userdata).length>0"
+        v-if="Object.keys(userdata).length > 0"
         @close="clear"
     >
         <el-form :model="userdata" :rules="editFormRules" ref="editForm">
             <el-form-item label="用户名" label-width="70px">
-                <el-input v-model="userdata.username" disabled></el-input>
+                <el-input v-model="userdata.account" disabled></el-input>
             </el-form-item>
             <el-form-item label="微信" label-width="70px" prop="wx">
-                <el-input v-model="userdata.wx"></el-input>
+                <el-input v-model="userdata.wechat"></el-input>
             </el-form-item>
             <el-form-item label="电话" label-width="70px" prop="mobile">
-                <el-input v-model="userdata.mobile"></el-input>
+                <el-input v-model="userdata.tel"></el-input>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -29,32 +29,29 @@
 
 <script>
 import { emailCheck, mobileCheck } from 'commonjs/utils';
+import { updateUser } from 'network/users';
 export default {
     name: 'EditDialog',
     props: {
         dialogVisible: Boolean,
-        userdata:{
-            type:Object,
-            default(){
+        userdata: {
+            type: Object,
+            default() {
                 return {};
             }
         }
     },
-    computed:{
-        operateID(){
+    computed: {
+        operateID() {
             return this.opUser.id;
         }
     },
     data() {
         return {
-            
             editFormRules: {
-                wx: [
-                    { required: true, message: '请输入微信', trigger: 'blur' },
-                    
-                ],
-                mobile: [
-                    { required: true, message: '请输入电话', trigger: 'blur' },
+                wechat: [{ message: '请输入微信', trigger: 'blur' }],
+                tel: [
+                    { message: '请输入电话', trigger: 'blur' },
                     {
                         validator: mobileCheck,
                         trigger: 'blur'
@@ -64,15 +61,20 @@ export default {
         };
     },
     methods: {
-        submit(){
-            this.$refs.editForm.validate(valid=>{
-              if(!valid)
-                return ;
-                this.$message.success('用户信息更新成功');
-                this.$emit('update:dialogVisible',false);
-            })
-        },  clear(){
-            this.$refs.editForm.resetField();
+        submit() {
+            this.$refs.editForm.validate(async valid => {
+                if (!valid) return;
+                const res = await updateUser(this.userdata);
+                if (res.status === 200) {
+                    this.$message.success('用户信息更新成功');
+                    this.$emit('updateSuccess', false);
+                } else {
+                    this.$message.error('用户信息更新失败');
+                }
+            });
+        },
+        clear() {
+            this.$refs.editForm.resetFields();
         }
     }
 };

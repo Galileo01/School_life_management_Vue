@@ -3,6 +3,9 @@ export const roleMixin = {
     computed: {
         userRole() {
             return this.$store.getters.userRole;
+        },
+        account(){
+            return this.$store.getters.account
         }
     }
 };

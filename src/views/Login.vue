@@ -57,6 +57,7 @@
 <script>
 import { log } from 'util';
 import SIdentify from 'components/com/identify';
+import {loginReq} from 'network/login'
 export default {
     name: 'Login',
     data() {
@@ -75,8 +76,8 @@ export default {
                     },
                     {
                         min: 3,
-                        max: 5,
-                        message: '长度在 3 到 5 个字符',
+                        max: 15,
+                        message: '长度在 3 到 15 个字符',
                         trigger: 'blur'
                     }
                 ],
@@ -101,35 +102,67 @@ export default {
             this.$refs.form.resetFields();
         },
         login() {
-            this.$refs.form.validate(valid => {
+            this.$refs.form.validate(async  valid => {
                 if (valid) {
                     //基本验证 通过
                     if (this.identifyCode === this.formData.identify) {
-                        //验证码 正确
-                        if (this.formData.password === '123456') {
-                            // 验证成功
-                            window.sessionStorage.setItem(
+                        // //验证码 正确
+                    const res= await loginReq(this.formData.username,this.formData.password);
+                    console.log(res);
+                    if(res.status===200)
+                    {
+                            window.localStorage.setItem(
                                 'token',
-                                this.identifyCode
-                            ); // 模拟设置 token
-
-                            const admin = {
-                                account: this.formData.username,
-                                admin_id: this.identifyCode + '',
-                                token: this.identifyCode,
-                                Role: this.formData.username === 'admin' ? 0 : 1,
-                                tel:'123131313331',
-                                qq:'14545432546',
-                                wechat:'sdasdasdasd',
-                                avatar:'https://note.youdao.com/yws/api/image/normal/1576755416467?userId=1354541676%40qq.com'
-                            };
-                            this.$store.commit('getUserdata',admin);
-
-                            this.$router.push('/home');
+                                res.data.token
+                            );
+                            const {account,tel,email,qq,wechat,Role}=res.data;
+                            this.$store.commit('getUserdata',{
+                                    account,tel,email,qq,wechat,Role
+                            });
+                            sessionStorage.setItem(
+                                'user',
+                                {
+                                   account
+                                }
+                            );
+                             this.$router.push('/home');
                             this.$message.success('登录成功');
-                        } else {
-                            this.$message.error('用户名或密码错误');
-                        }
+                    }
+                    else{
+                        this.$message.error('用户名或密码错误');
+                        
+                    }
+                    
+                        // if (this.formData.password === '123456') {
+                        //     // 验证成功
+                        //     window.localStorage.setItem(
+                        //         'token',
+                        //         this.identifyCode
+                        //     ); // 模拟设置 token
+
+                        //     const admin = {
+                        //         account: this.formData.username,
+                        //         admin_id: this.identifyCode + '',
+                        //         token: this.identifyCode,
+                        //         Role: this.formData.username === 'admin' ? 0 : 1,
+                        //         tel:'123131313331',
+                        //         qq:'14545432546',
+                        //         wechat:'sdasdasdasd',
+                        //         avatar:'https://note.youdao.com/yws/api/image/normal/1576755416467?userId=1354541676%40qq.com'
+                        //     };
+                        //     this.$store.commit('getUserdata',admin);
+                        //     sessionStorage.setItem(
+                        //         'user',
+                        //         JSON.stringify({
+                        //             username: 'admin',
+                        //             id: '1234'
+                        //         })
+                        //     );
+                        //     this.$router.push('/home');
+                        //     this.$message.success('登录成功');
+                        // } else {
+                        //     this.$message.error('用户名或密码错误');
+                        // }
                     } else {
                         this.$message.error('验证码错误');
                         this.formData.identify = '';
@@ -147,11 +180,35 @@ export default {
                 count++;
             }
             this.identifyCode = code;
+        },
+        // 检测已有的token  ，自动登录
+        autoLogin() {
+            if (localStorage.getItem('token')) {
+                //本地存有 token
+                //发送自动登录请求，若 token 没有过期 就自动进入 进入首页,并保存 传回的 用户信息
+
+                this.$message.success('自动登录');
+                this.$router.push('/home');
+                const admin = {
+                                account: this.formData.username,
+                                admin_id: this.identifyCode + '',
+                                token: this.identifyCode,
+                                Role: this.formData.username === 'admin' ? 0 : 1,
+                                tel:'123131313331',
+                                qq:'14545432546',
+                                wechat:'sdasdasdasd',
+                                avatar:'https://note.youdao.com/yws/api/image/normal/1576755416467?userId=1354541676%40qq.com'
+                            };
+                            this.$store.commit('getUserdata',admin);
+            } else {
+                //随机生成 数字 验证码
+                this.generateIdentify();
+            }
         }
     },
     created() {
         //随机生成 数字 验证码
-        this.generateIdentify();
+        this.autoLogin();;
     },
     components: {
         's-identify': SIdentify

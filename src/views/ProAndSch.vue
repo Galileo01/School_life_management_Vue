@@ -4,7 +4,7 @@
         <el-card>
             <el-row>
                 <el-col :span="4">
-                    <el-select v-model="type">
+                    <el-select v-model="type" @change="getData">
                         <el-option
                             v-for="(item, index) in listType"
                             :key="index"
@@ -12,11 +12,6 @@
                             :value="item.value"
                         ></el-option>
                     </el-select>
-                </el-col>
-                <el-col :span="4">
-                    <el-button type="primary" @click="getData"
-                        >获取列表</el-button
-                    >
                 </el-col>
                 <el-col :span="6">
                     <el-input
@@ -30,14 +25,14 @@
                         ></el-input
                     >
                 </el-col>
-                <el-col :span="4" :offset="1">
-                    <el-button type="primary" @click="showAddDialog"
+                <el-col :span="6" :offset="2" v-if="$store.getters.userRole===63">
+                    <el-button type="info" @click="addVisible = true"
                         >添加{{ typeText }}</el-button
                     >
                 </el-col>
             </el-row>
             <PASTable
-                :datalist="tablelist"
+                :datalist="showlist"
                 :type="type"
                 @edit="edit"
                 @remove="remove"
@@ -56,7 +51,10 @@
         <el-dialog :visible.sync="editVisible" title="修改信息" @close="close">
             <el-form>
                 <el-form-item :label="typeText + '新名称'" label-width="90px">
-                    <el-input v-model="newName"></el-input>
+                    <el-input
+                        v-model="editInfo.name"
+                        @keyup.enter.native="submitEdit"
+                    ></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -64,21 +62,20 @@
                 <el-button type="primary" @click="submitEdit">确 定</el-button>
             </span>
         </el-dialog>
-        <el-dialog
-            :visible.sync="addVisible"
-            :title="'添加' + typeText"
-            @close="close"
-        >
-            <el-form>
-                <el-form-item
-                    :label="'新' + typeText + '名称'"
-                    label-width="90px"
-                >
-                    <el-input v-model="newData"></el-input>
+        <el-dialog :visible.sync="addVisible" :title="'添加' + typeText">
+            <el-form label-width="70px">
+                <el-form-item label="名称">
+                    <el-input v-model="addInfo.name"></el-input>
+                </el-form-item>
+                <el-form-item label="省份ID">
+                    <el-input v-model="addInfo.provinceID"></el-input>
+                </el-form-item>
+                <el-form-item label="学校ID" v-show="type === 'university'">
+                    <el-input v-model="addInfo.universityID"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button @click="addVisible = false">取 消</el-button>
+                <el-button @click="editVisible = false">取 消</el-button>
                 <el-button type="primary" @click="submitAdd">确 定</el-button>
             </span>
         </el-dialog>
@@ -86,6 +83,15 @@
 </template>
 
 <script>
+import {
+    getProvince,
+    getSch,
+    updatePro,
+    updateSch,
+    deletePro,
+    deleteSch,
+    addSch, addProvince
+} from 'network/prosch';
 const PASTable = () => import('components/pro_sch/ListTable');
 import { roleMixin } from 'commonjs/mixin';
 export default {
@@ -94,11 +100,10 @@ export default {
     data() {
         return {
             tablelist: [],
-            schools: [],
-            provinces: [],
+            showlist: [],
             queryInfo: {
-                page: 0,
-                size: 5,
+                page: 1,
+                size: 10,
                 total: 0
             },
             queryName: '',
@@ -108,117 +113,76 @@ export default {
                     value: 'province',
                     label: '省份'
                 },
-                { value: 'school', label: '学校' }
+                { value: 'university', label: '学校' }
             ],
             editVisible: false,
+            editInfo: {},
             addVisible: false,
-            newName: '',
-            editID: -1,
-            newData: ''
+            addInfo: {
+                name: '',
+                provinceID: 0,
+                universityID: 0
+            }
         };
     },
     computed: {
         typeText() {
             if (this.type === 'province') return '省份';
             else return '学校';
-        },
-        editingInfo() {
-            if (this.editID === -1) return;
-            this.tablelist.find();
         }
     },
     methods: {
-        getProvinces() {
-            const provinces = [
-                {
-                    id: 1,
-                    name: '重庆市'
-                },
-                {
-                    id: 2342,
-                    name: '北京省'
-                },
-                {
-                    id: 35,
-                    name: '泸州市'
-                },
-                {
-                    id: 6767,
-                    name: '四川省'
-                },
-                {
-                    id: 123,
-                    name: '浙江省'
-                }
-            ];
-            this.provinces = provinces;
-            if (this.type === 'province') this.tablelist = provinces;
-        },
-        getSchool() {
-            const schools = [
-                {
-                    id: 1233,
-                    name: '重庆理工大学',
-                    proID: 1
-                },
-                {
-                    id: 999,
-                    name: '重庆交通大学',
-                    proID: 1
-                },
-                {
-                    id: 444,
-                    name: '重庆示范大学',
-                    proID: 1
-                },
-                {
-                    id: 66,
-                    name: '重庆外国语大学',
-                    proID: 1
-                },
-                {
-                    id: 44,
-                    name: '重庆工商大学',
-                    proID: 1
-                }
-            ];
-            this.schools = schools;
-            if (this.type === 'school') this.tablelist = schools;
-        },
-        getData() {
-            this.getProvinces();
-            this.getSchool();
-            this.queryInfo = {
-                page: 1,
-                size: 7,
-                total: 30
-            };
+        async getData() {
+            let res = [];
+            const { page, size } = this.queryInfo;
+            switch (this.type) {
+                case 'province':
+                    res = await getProvince(page, size);
+                    break;
+                case 'university':
+                    res = await getSch(page, size);
+                    break;
+            }
+            console.log(res);
+
+            if (res.status === 200) {
+                this.tablelist = res.data.items;
+                this.queryInfo.total = res.data.total;
+                this.showlist = this.tablelist;
+            } else {
+                this.$message.error('列表数据获取失败');
+            }
         },
         find() {
-            if (!this.queryName)
+            if (!this.queryName) {
+                this.showlist = this.tablelist;
                 return this.$message.info(`请输入${this.typeText}名称`);
-            const showlist = this[this.type + 's'];
-            const filtered = showlist.filter(val =>
-                val.name.includes(this.queryName)
+            }
+            const attr = this.type === 'province' ? 'name' : 'Name'; //根据 type 计算 属性的键
+            const filtered = this.tablelist.filter(val =>
+                val[attr].includes(this.queryName)
             );
             if (filtered.length === 0) {
                 this.$message.info(`未搜索到相关${this.typeText}`);
-                this.tablelist = showlist;
+                this.showlist = showlist;
             } else {
-                this.tablelist = filtered;
+                this.showlist = filtered;
             }
         },
         reset() {
-            this.tablelist = this[this.type + 's'];
+            this.showlist = this.tablelist;
         },
-        edit(id) {
-            this.editID = id;
+        edit(name) {
+            this.editInfo = this.tablelist.find(val => val.name === name);
             this.editVisible = true;
         },
-        async remove(id) {
-            if (this.userRole !== 0) return this.$message.error('权限不够');
+        async remove(name) {
+            if (this.userRole !== 63) return this.$message.error('权限不够');
 
-            this.editID = id;
+            const obj = this.tablelist.find(val => val.name === name);
+            if (!obj)
+                // 没找到 直接退出
+                return;
             const result = await this.$confirm(
                 `此操作将删除该${this.typeText}, 是否继续?`,
                 '提示',
@@ -230,32 +194,98 @@ export default {
             ).catch(error => error);
             if (result === 'cancel') this.$message.info('操作取消');
             else {
-                this.$message.success(`成功删除该${this.typeText}`);
+                let res = {};
+                switch (this.type) {
+                    case 'province':
+                        res = await deletePro(obj.provinceID);
+                        break;
+                    case 'university':
+                        res = await deleteSch(obj.universityID);
+                        break;
+                }
+                console.log(res);
+
+                if (res.status === 200) {
+                    this.$message.success(`成功删除该${this.typeText}`);
+                    this.getData();
+                } else {
+                    this.$message.error('删除失败');
+                }
             }
         },
-        submitEdit() {
-            if (!this.newName) return;
-            this.$message.success(`${this.typeText}信息更新成功`);
-            this.editVisible = false;
-        },
-        submitAdd() {
-            if (!this.newData) return;
-            this.$message.success(`添加成功`);
-            this.addVisible = false;
-        },
-        showAddDialog() {
-            if (this.userRole !== 0) return this.$message.error('权限不够');
-            this.addVisible = true;
+        async submitEdit() {
+            if (!this.editInfo) return;
+            let res = [];
+            const { name, provinceID, universityID } = this.editInfo;
+            switch (this.type) {
+                case 'university':
+                    res = await updateSch(name, provinceID, universityID);
+                    break;
+                case 'province':
+                    res = await updatePro(name, provinceID);
+                    break;
+            }
+            if (res.status === 200) {
+                this.$message.success(`${this.typeText}名称更新成功`);
+                this.getData();
+                this.editVisible = false;
+            } else {
+                this.$message.error(`${this.typeText}名称更新失败`);
+            }
         },
         close() {
-            this.newName = '';
-            this.newData = '';
+            this.editInfo = '';
         },
-        handleSizeChange() {},
-        handleCurrentChange() {}
+        handleSizeChange(size) {
+            this.queryInfo.size = size;
+            this.getData();
+        },
+        handleCurrentChange(page) {
+            this.queryInfo.page = page;
+            this.getData();
+        },
+        async submitAdd() {
+            const { name, provinceID, universityID } = this.addInfo;
+            if (this.type==='province'&&(name === '' || provinceID == 0)||(this.type==='university')&&( name == '' || provinceID == 0||universityID === 0))
+                return this.$message.info('请确认信息是否填写完整');
+            else {
+                let res = {};
+                switch (this.type) {
+                    case 'province':
+                        res = await addProvince({
+                            name,
+                            provinceID:parseInt(provinceID)
+                        });
+                        break;
+                    case 'university':
+                        res = await addSch({
+                            name,
+                            provinceID:parseInt(provinceID),
+                            universityID:parseInt(universityID)
+                        });
+                        break;
+                }
+                if (res.status === 200) {
+                    this.$message.success(`${this.type}添加成功`);
+                    this.getData();
+                } else {
+                    this.$message.error(`${this.type}添加失败`);
+                }
+                this.addVisible = false;
+            }
+        },
+        resetAdd()
+        {
+            this.addInfo={
+                name: '',
+                provinceID: 0,
+                universityID: 0
+            }
+        }
     },
     created() {
         this.getData();
+        // this.test();
     },
     components: {
         PASTable

@@ -6,44 +6,47 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         userdata: {
-            account: 'admin',
-            admin_id:123,
-            token:'123121321',
-            Role:0,
-            tel: '123131313331',
-            qq: '14545432546',
-            wechat: 'sdasdasdasd',
-            avatar:
-                'https://note.youdao.com/yws/api/image/normal/1576755416467?userId=1354541676%40qq.com'
         },
         activePath: ''
     },
     mutations: {
         getUserdata(state, payload) {
-            const { id, username, token, role } = payload;
+            const { admin_id, account, tel, email, qq, wechat, Role } = payload;
             state.userdata = {
-                id,
-                username,
-                token,
-                role
+                admin_id,
+                account,
+                Role,
+                tel,
+                email,
+                qq,
+                wechat
             };
+            sessionStorage.setItem('account',account);
+            sessionStorage.setItem('Role',Role);
         },
         changeActivePath(state, path) {
             state.activePath = path;
+        },
+        changePass(state,thenew)
+        {
+                state.userdata.password=thenew;
         }
     },
     actions: {},
     modules: {},
     getters: {
         userRole(state) {
-            return state.userdata.Role;
+            return state.userdata.Role||sessionStorage.getItem('Role');
         },
         userdata(state) {
             return state.userdata;
         },
-        activePath(state)
-        {
+        activePath(state) {
             return state.activePath;
+        },
+        account(state)
+        {
+            return state.userdata.account||sessionStorage.getItem('account');
         }
     }
 });
