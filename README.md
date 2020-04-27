@@ -22,5 +22,6 @@ npm run build
 0408    v    
 完成 自动登录的功能，将token 保存到本地，改session 为local 
 
-
+0427 v1.5
+完成 大部分 页面 以及大部分 网络请求的功能
 
