@@ -89,7 +89,10 @@ export default {
        async _updateState(ID,newstate)
         {
             console.log(newstate,ID);
-            const res= await updateState(newstate,ID);
+            const num=newstate===true?1:2;
+            const res= await updateState(num,ID);
+            console.log(res);
+            
             if(res.status!==200)
             this.$message.error('状态更新失败');
             else{

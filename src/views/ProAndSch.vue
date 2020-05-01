@@ -25,7 +25,7 @@
                         ></el-input
                     >
                 </el-col>
-                <el-col :span="6" :offset="2" v-if="$store.getters.userRole===63">
+                <el-col :span="6" :offset="2" v-if="$store.getters.userRole==='63'">
                     <el-button type="info" @click="addVisible = true"
                         >添加{{ typeText }}</el-button
                     >
