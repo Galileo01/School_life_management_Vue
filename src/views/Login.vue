@@ -57,7 +57,8 @@
 <script>
 import { log } from 'util';
 import SIdentify from 'components/com/identify';
-import {loginReq} from 'network/login'
+import { loginReq } from 'network/login';
+import md5 from 'js-md5';
 export default {
     name: 'Login',
     data() {
@@ -65,21 +66,21 @@ export default {
             formData: {
                 username: '',
                 password: '',
-                identify: ''
+                identify: '',
             },
             rules: {
                 username: [
                     {
                         required: true,
                         message: '请输入用户名',
-                        trigger: 'blur'
+                        trigger: 'blur',
                     },
                     {
                         min: 3,
                         max: 15,
                         message: '长度在 3 到 15 个字符',
-                        trigger: 'blur'
-                    }
+                        trigger: 'blur',
+                    },
                 ],
                 password: [
                     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -87,14 +88,18 @@ export default {
                         min: 6,
                         max: 15,
                         message: '长度在 6 到 15 个字符',
-                        trigger: 'blur'
-                    }
+                        trigger: 'blur',
+                    },
                 ],
                 identify: [
-                    { required: true, message: '请输入验证码', trigger: 'blur' }
-                ]
+                    {
+                        required: true,
+                        message: '请输入验证码',
+                        trigger: 'blur',
+                    },
+                ],
             },
-            identifyCode: '1234' // 验证码
+            identifyCode: '1234', // 验证码
         };
     },
     methods: {
@@ -102,67 +107,47 @@ export default {
             this.$refs.form.resetFields();
         },
         login() {
-            this.$refs.form.validate(async  valid => {
+            this.$refs.form.validate(async (valid) => {
                 if (valid) {
                     //基本验证 通过
                     if (this.identifyCode === this.formData.identify) {
                         // //验证码 正确
-                    const res= await loginReq(this.formData.username,this.formData.password);
-                    console.log(res);
-                    if(res.status===200)
-                    {
+                        const res = await loginReq(
+                            this.formData.username,
+                            this.formData.password
+                        );
+                        console.log(res);
+                        if (res.status === 200) {
                             window.localStorage.setItem(
                                 'token',
                                 res.data.token
                             );
-                            const {account,tel,email,qq,wechat,Role}=res.data;
-                            this.$store.commit('getUserdata',{
-                                    account,tel,email,qq,wechat,Role
+                            const {
+                                account,
+                                tel,
+                                email,
+                                qq,
+                                wechat,
+                                Role,
+                            } = res.data;
+                            this.$store.commit('getUserdata', {
+                                account,
+                                tel,
+                                email,
+                                qq,
+                                wechat,
+                                Role,
                             });
-                            sessionStorage.setItem(
-                                'user',
-                                {
-                                   account
-                                }
+                            localStorage.setItem('account', account);
+                            localStorage.setItem(
+                                'password',
+                                md5.hex(this.formData.password)
                             );
-                             this.$router.push('/home');
+                            this.$router.push('/home');
                             this.$message.success('登录成功');
-                    }
-                    else{
-                        this.$message.error('用户名或密码错误');
-                        
-                    }
-                    
-                        // if (this.formData.password === '123456') {
-                        //     // 验证成功
-                        //     window.localStorage.setItem(
-                        //         'token',
-                        //         this.identifyCode
-                        //     ); // 模拟设置 token
-
-                        //     const admin = {
-                        //         account: this.formData.username,
-                        //         admin_id: this.identifyCode + '',
-                        //         token: this.identifyCode,
-                        //         Role: this.formData.username === 'admin' ? 0 : 1,
-                        //         tel:'123131313331',
-                        //         qq:'14545432546',
-                        //         wechat:'sdasdasdasd',
-                        //         avatar:'https://note.youdao.com/yws/api/image/normal/1576755416467?userId=1354541676%40qq.com'
-                        //     };
-                        //     this.$store.commit('getUserdata',admin);
-                        //     sessionStorage.setItem(
-                        //         'user',
-                        //         JSON.stringify({
-                        //             username: 'admin',
-                        //             id: '1234'
-                        //         })
-                        //     );
-                        //     this.$router.push('/home');
-                        //     this.$message.success('登录成功');
-                        // } else {
-                        //     this.$message.error('用户名或密码错误');
-                        // }
+                        } else {
+                            this.$message.error('用户名或密码错误');
+                        }
                     } else {
                         this.$message.error('验证码错误');
                         this.formData.identify = '';
@@ -182,37 +167,24 @@ export default {
             this.identifyCode = code;
         },
         // 检测已有的token  ，自动登录
-        autoLogin() {
+        async autoLogin() {
             if (localStorage.getItem('token')) {
                 //本地存有 token
-                //发送自动登录请求，若 token 没有过期 就自动进入 进入首页,并保存 传回的 用户信息
-
-                this.$message.success('自动登录');
-                this.$router.push('/home');
-                const admin = {
-                                account: this.formData.username,
-                                admin_id: this.identifyCode + '',
-                                token: this.identifyCode,
-                                Role: this.formData.username === 'admin' ? 0 : 1,
-                                tel:'123131313331',
-                                qq:'14545432546',
-                                wechat:'sdasdasdasd',
-                                avatar:'https://note.youdao.com/yws/api/image/normal/1576755416467?userId=1354541676%40qq.com'
-                            };
-                            this.$store.commit('getUserdata',admin);
+    
+                // this.$store.commit('getUserdata', admin);
             } else {
                 //随机生成 数字 验证码
                 this.generateIdentify();
             }
-        }
+        },
     },
     created() {
         //随机生成 数字 验证码
-        this.autoLogin();;
+        this.autoLogin();
     },
     components: {
-        's-identify': SIdentify
-    }
+        's-identify': SIdentify,
+    },
 };
 </script>
 

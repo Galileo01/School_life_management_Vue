@@ -15,3 +15,11 @@ html,body,#app{
 .el-pagination{
     margin-top:10px;
 }
+
+
+
+/* el-row 一行 所有元素 的居中 */
+.ali-c {
+    display: flex;
+    align-items: center;
+}

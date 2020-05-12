@@ -4,7 +4,7 @@
         <el-card>
             <el-row>
                 <el-col :span="4"
-                    ><el-select v-model="listType" @change="getData">
+                    ><el-select v-model="listType" @change="getData" >
                         <el-option
                             v-for="(item, index) in typelist"
                             :key="index"
@@ -267,27 +267,27 @@ export default {
             const content = '二手二手';
             const tag = 'help';
             const title = '这是二手二手';
-            const userID = 34;
+            const userID = '1dbe107d-562d-4cfb-a4c9-adbeec45181f';
 
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < 10; i++) {
                 const params = {
                     TEL: Tel + i,
                     content: content + i,
                     tag: [tag + i],
                     title: title + i,
-                    userID: userID + i * 3 + '',
+                    userID: userID ,
                     note: 'note' + i,
                     picture: ['picture' + i],
-                    userName: userID + i * 3 + '',
-                    price: 66.66
+                    userName: 'user4',
                 };
-                const res = await addSec(params);
+                const res = await addLost(params);
                 console.log(res);
             }
         }
     },
     created() {
         this.getData();
+        // this.test();
     },
     components: {
         OrderTable

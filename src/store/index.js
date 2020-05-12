@@ -21,8 +21,8 @@ export default new Vuex.Store({
                 qq,
                 wechat
             };
-            sessionStorage.setItem('account',account);
-            sessionStorage.setItem('Role',Role);
+            localStorage.setItem('account',account);
+            localStorage.setItem('Role',Role);
         },
         changeActivePath(state, path) {
             state.activePath = path;
@@ -36,7 +36,7 @@ export default new Vuex.Store({
     modules: {},
     getters: {
         userRole(state) {
-            return state.userdata.Role||sessionStorage.getItem('Role');
+            return state.userdata.Role||localStorage.getItem('Role');
         },
         userdata(state) {
             return state.userdata;
@@ -46,7 +46,7 @@ export default new Vuex.Store({
         },
         account(state)
         {
-            return state.userdata.account||sessionStorage.getItem('account');
+            return state.userdata.account||localStorage.getItem('account');
         }
     }
 });

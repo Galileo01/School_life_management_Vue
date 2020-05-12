@@ -28,7 +28,9 @@ import {
     Option,
     Upload,
     Radio,
-    Tag
+    Tag,
+    TabPane,
+    Tabs
  } from 'element-ui';
 
 
@@ -60,5 +62,7 @@ Vue.use(Option)
 Vue.use(Upload)
 Vue.use(Radio)
 Vue.use(Tag)
+Vue.use(Tabs)
+Vue.use(TabPane)
 Vue.prototype.$message = Message;
 Vue.prototype.$confirm=MessageBox.confirm;

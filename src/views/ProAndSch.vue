@@ -158,13 +158,12 @@ export default {
                 this.showlist = this.tablelist;
                 return this.$message.info(`请输入${this.typeText}名称`);
             }
-            const attr = this.type === 'province' ? 'name' : 'Name'; //根据 type 计算 属性的键
             const filtered = this.tablelist.filter(val =>
-                val[attr].includes(this.queryName)
+                val.name.includes(this.queryName)
             );
             if (filtered.length === 0) {
                 this.$message.info(`未搜索到相关${this.typeText}`);
-                this.showlist = showlist;
+                // this.showlist = showlist;
             } else {
                 this.showlist = filtered;
             }

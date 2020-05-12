@@ -76,12 +76,13 @@
 
 <script>
 import { emailCheck, mobileCheck } from 'commonjs/utils';
-import { updateBaseInfo, changePassword } from 'network/profile';
+import { updateBaseInfo, changePassword, getMe } from 'network/profile';
+import md5 from 'js-md5';
 export default {
     name: 'Profile',
     data() {
         return {
-            userdata: this.$store.getters.userdata,
+            userdata: {},
             fileList: [],
             radio: '1',
             rules: {
@@ -89,71 +90,82 @@ export default {
                     { message: '请输入电话', trigger: 'blur' },
                     {
                         message: '请输入用户名',
-                        trigger: 'blur'
+                        trigger: 'blur',
                     },
                     {
                         min: 3,
                         max: 10,
                         message: '长度在 3 到 10 个字符',
-                        trigger: 'blur'
-                    }
+                        trigger: 'blur',
+                    },
                 ],
                 password: [
                     {
                         min: 6,
                         max: 15,
                         message: '长度在 6 到 15 个字符',
-                        trigger: 'blur'
-                    }
+                        trigger: 'blur',
+                    },
                 ],
                 //邮箱和 电话使用自定义的 验证规则
                 email: [
                     {
                         validator: emailCheck,
-                        trigger: 'blur'
-                    }
+                        trigger: 'blur',
+                    },
                 ],
                 tel: [
                     {
                         validator: mobileCheck,
-                        trigger: 'blur'
-                    }
-                ]
+                        trigger: 'blur',
+                    },
+                ],
             },
             dialogVisible: false,
             passwords: {
                 old: '',
-                thenew: ''
-            }
+                thenew: '',
+            },
         };
     },
     methods: {
+        async getData() {
+            const res = await getMe();
+            console.log(res);
+
+            if (res.status !== 200)
+                return this.$message.error('个人信息获取失败');
+            this.userdata = res.data;
+        },
         reset() {
             this.$refs.form.resetFields();
         },
         clear() {
             this.passwords = {
                 old: '',
-                thenew: ''
+                thenew: '',
             };
         },
-        async submit() {
-            const res = await updateBaseInfo(this.userdata);
-            // console.log(res);
-            
-            if (res.status === 200) {
-                this.$message.success('信息更新成功');
-            }
-            else{
-                this.$message.error('信息更新失败');
-                
-            }
+        submit() {
+            this.$refs.form.validate(async (valid) => {
+                if (valid) {
+                    const res = await updateBaseInfo(this.userdata);
+                    // console.log(res);
+
+                    if (res.status === 200) {
+                        this.$message.success('信息更新成功');
+                    } else {
+                        this.$message.error('信息更新失败');
+                    }
+                }
+            });
         },
         async submitPassEdit() {
             const { old, thenew } = this.passwords;
+            const passMD5 = localStorage.getItem('password');
             if (old === '' || thenew === '')
                 return this.$message.info('请输入旧密码和新密码');
-            if (old !== this.userdata.password)
+            if (md5.hex(old) !== passMD5)
                 return this.$message.error('旧密码错误');
 
             const res = await changePassword(thenew);
@@ -166,11 +178,14 @@ export default {
             } else {
                 this.$message.error('密码修改失败');
             }
-        }
+        },
     },
     beforeDestroy() {
         this.reset();
-    }
+    },
+    created() {
+        this.getData();
+    },
 };
 </script>
 

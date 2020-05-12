@@ -12,6 +12,7 @@
                         clearable
                         v-model="queryInfo.query"
                         @keyup.enter.native="getUsers"
+                        @clear="getUsers"
                     >
                         <el-button
                             slot="append"
@@ -20,7 +21,7 @@
                         ></el-button>
                     </el-input>
                 </el-col>
-                <el-col :span="4" v-if="userRole===63">
+                <el-col :span="4" v-if="userRole=='63'">
                     <el-button type="primary" @click="addClick"
                         >添加管理员</el-button
                     >

@@ -44,17 +44,16 @@
 
 <script>
 import HomeAsideMenu from 'components/home/HomeAsideMenu';
-import {roleMixin} from 'commonjs/mixin'
+import { roleMixin } from 'commonjs/mixin';
 export default {
     name: 'Home',
-    mixins:[roleMixin],
+    mixins: [roleMixin],
     data() {
         return {
             //侧边栏 菜单
             menulist: [],
             iconlist: [], //菜单 icon 类名,
-            isCollapse: false, //是否折叠
-           
+            isCollapse: false //是否折叠
         };
     },
     computed: {
@@ -72,10 +71,9 @@ export default {
                 return '160px';
             }
         },
-        userInfo(){
+        userInfo() {
             return this.$store.getters.userdata;
-        },
-        
+        }
     },
     methods: {
         async logout() {
@@ -93,7 +91,8 @@ export default {
             if (result === 'cancel') {
                 this.$message.info('退出操作取消');
             } else {
-                window.localStorage.removeItem('token');
+                localStorage.clear();
+                sessionStorage.clear();
                 this.$router.push('/login');
                 this.$message.success('成功退出');
             }
@@ -109,7 +108,7 @@ export default {
         HomeAsideMenu
     },
     created() {
-          const superadmin = [
+        const superadmin = [
             {
                 id: 100,
                 authName: '用户管理',
@@ -129,7 +128,7 @@ export default {
                     }
                 ]
             },
-            
+
             {
                 id: 400,
                 authName: '订单管理',
@@ -153,7 +152,8 @@ export default {
                         authName: '数据报表',
                         path: 'home/report',
                         children: []
-                    },{
+                    },
+                    {
                         id: 503,
                         authName: '省份学校',
                         path: 'home/pro&sch',
@@ -171,8 +171,10 @@ export default {
                         authName: '信息修改',
                         path: 'home/profile',
                         children: []
-                    }]
-            },{
+                    }
+                ]
+            },
+            {
                 id: 800,
                 authName: '其他',
                 path: '',
@@ -182,18 +184,17 @@ export default {
                         authName: '关于',
                         path: 'home/about',
                         children: []
-                    }]
+                    }
+                ]
             }
-    
         ];
         // const secend=[];
-        const third=[
+        const third = [
             {
                 id: 100,
                 authName: '用户管理',
                 path: '',
                 children: [
-                   
                     {
                         id: 102,
                         authName: '用户列表',
@@ -202,7 +203,7 @@ export default {
                     }
                 ]
             },
-            
+
             {
                 id: 400,
                 authName: '订单管理',
@@ -226,7 +227,8 @@ export default {
                         authName: '数据报表',
                         path: 'home/report',
                         children: []
-                    },{
+                    },
+                    {
                         id: 503,
                         authName: '省份学校',
                         path: 'home/pro&sch',
@@ -244,8 +246,10 @@ export default {
                         authName: '信息修改',
                         path: 'home/profile',
                         children: []
-                    }]
-            },{
+                    }
+                ]
+            },
+            {
                 id: 800,
                 authName: '其他',
                 path: '',
@@ -255,24 +259,15 @@ export default {
                         authName: '关于',
                         path: 'home/about',
                         children: []
-                    }]
+                    }
+                ]
             }
-    
         ];
-        if(this.userRole==3)
-        {
-            this.menulist=third;
-        }
-        else 
-        this.menulist=superadmin;
+        if (this.userRole == 3) {
+            this.menulist = third;
+        } else this.menulist = superadmin;
         // if(this.userRole)//根据劝降 控制 侧边栏的 结构
-        this.iconlist = [
-            'yuangong',
-            'order',
-            'shuju',
-            'ren',
-            'guanyu'
-        ];
+        this.iconlist = ['yuangong', 'order', 'shuju', 'ren', 'guanyu'];
     }
 };
 </script>
@@ -296,10 +291,9 @@ export default {
         display: flex;
         height: 50px;
         align-items: center;
-        img{
+        img {
             border-radius: 50%;
         }
-        
     }
     .logo {
         height: 40px;
@@ -333,7 +327,6 @@ export default {
     background-color: #eaedf1;
     // border-left: 1px solid #d2d6de;
     padding: 10px;
-    
 }
 .left-wapper {
     margin-right: 10px;
