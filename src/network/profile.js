@@ -13,3 +13,11 @@ export function changePassword(newpass)
     })
     .catch(errFun)
 }
+
+
+//获取 管理员自己信息
+
+export function getMe(){
+  return ins.get('/get/me')
+  .catch(errFun)
+}
