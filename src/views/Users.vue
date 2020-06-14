@@ -13,6 +13,7 @@
                         v-model="queryInfo.query"
                         @keyup.enter.native="_getUsers"
                         @clear="_getUsers('',1,0)"
+                         size="medium"
                     >
                         <el-button
                             slot="append"
@@ -99,7 +100,7 @@ export default {
                 this.users = items.length > 0 ? items : this.users; //如果 获取的数据长度 不为空 才保存
                 this.total = items.length > 0 ? res.data.total : this.total;
                 if (items.length === 0 && this.queryInfo.query !== '')
-                    this.$message.info('没有查找到对应名称的管理员');
+                    this.$message.info('没有查找到对应名称的用户');
             } else {
                 this.$message.error('用户列表失败');
             }

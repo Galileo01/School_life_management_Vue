@@ -4,7 +4,7 @@
         <el-card>
             <el-row>
                 <el-col :span="4">
-                    <el-select v-model="type" @change="getData">
+                    <el-select v-model="type" @change="getData" size="medium">
                         <el-option
                             v-for="(item, index) in listType"
                             :key="index"
@@ -20,12 +20,17 @@
                         v-model="queryName"
                         @clear="reset"
                         clearable=""
+                        size="medium"
                         ><el-button slot="append" @click="find"
                             >搜索</el-button
                         ></el-input
                     >
                 </el-col>
-                <el-col :span="6" :offset="2" v-if="$store.getters.userRole===63">
+                <el-col
+                    :span="6"
+                    :offset="2"
+                    v-if="$store.getters.userRole === 63"
+                >
                     <el-button type="info" @click="addVisible = true"
                         >添加{{ typeText }}</el-button
                     >
@@ -90,7 +95,8 @@ import {
     updateSch,
     deletePro,
     deleteSch,
-    addSch, addProvince
+    addSch,
+    addProvince,
 } from 'network/prosch';
 const PASTable = () => import('components/pro_sch/ListTable');
 import { roleMixin } from 'commonjs/mixin';
@@ -104,16 +110,16 @@ export default {
             queryInfo: {
                 page: 1,
                 size: 10,
-                total: 0
+                total: 0,
             },
             queryName: '',
             type: 'province',
             listType: [
                 {
                     value: 'province',
-                    label: '省份'
+                    label: '省份',
                 },
-                { value: 'university', label: '学校' }
+                { value: 'university', label: '学校' },
             ],
             editVisible: false,
             editInfo: {},
@@ -121,15 +127,15 @@ export default {
             addInfo: {
                 name: '',
                 provinceID: 0,
-                universityID: 0
-            }
+                universityID: 0,
+            },
         };
     },
     computed: {
         typeText() {
             if (this.type === 'province') return '省份';
             else return '学校';
-        }
+        },
     },
     methods: {
         async getData() {
@@ -158,7 +164,7 @@ export default {
                 this.showlist = this.tablelist;
                 return this.$message.info(`请输入${this.typeText}名称`);
             }
-            const filtered = this.tablelist.filter(val =>
+            const filtered = this.tablelist.filter((val) =>
                 val.name.includes(this.queryName)
             );
             if (filtered.length === 0) {
@@ -172,13 +178,13 @@ export default {
             this.showlist = this.tablelist;
         },
         edit(name) {
-            this.editInfo = this.tablelist.find(val => val.name === name);
+            this.editInfo = this.tablelist.find((val) => val.name === name);
             this.editVisible = true;
         },
         async remove(name) {
             if (this.userRole !== 63) return this.$message.error('权限不够');
 
-            const obj = this.tablelist.find(val => val.name === name);
+            const obj = this.tablelist.find((val) => val.name === name);
             if (!obj)
                 // 没找到 直接退出
                 return;
@@ -188,9 +194,9 @@ export default {
                 {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
-                    type: 'warning'
+                    type: 'warning',
                 }
-            ).catch(error => error);
+            ).catch((error) => error);
             if (result === 'cancel') this.$message.info('操作取消');
             else {
                 let res = {};
@@ -245,7 +251,12 @@ export default {
         },
         async submitAdd() {
             const { name, provinceID, universityID } = this.addInfo;
-            if (this.type==='province'&&(name === '' || provinceID == 0)||(this.type==='university')&&( name == '' || provinceID == 0||universityID === 0))
+            if (
+                (this.type === 'province' &&
+                    (name === '' || provinceID == 0)) ||
+                (this.type === 'university' &&
+                    (name == '' || provinceID == 0 || universityID === 0))
+            )
                 return this.$message.info('请确认信息是否填写完整');
             else {
                 let res = {};
@@ -253,14 +264,14 @@ export default {
                     case 'province':
                         res = await addProvince({
                             name,
-                            provinceID:parseInt(provinceID)
+                            provinceID: parseInt(provinceID),
                         });
                         break;
                     case 'university':
                         res = await addSch({
                             name,
-                            provinceID:parseInt(provinceID),
-                            universityID:parseInt(universityID)
+                            provinceID: parseInt(provinceID),
+                            universityID: parseInt(universityID),
                         });
                         break;
                 }
@@ -273,22 +284,21 @@ export default {
                 this.addVisible = false;
             }
         },
-        resetAdd()
-        {
-            this.addInfo={
+        resetAdd() {
+            this.addInfo = {
                 name: '',
                 provinceID: 0,
-                universityID: 0
-            }
-        }
+                universityID: 0,
+            };
+        },
     },
     created() {
         this.getData();
         // this.test();
     },
     components: {
-        PASTable
-    }
+        PASTable,
+    },
 };
 </script>
 

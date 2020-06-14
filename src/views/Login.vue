@@ -1,6 +1,6 @@
 <template>
     <div class="login">
-        <h1 class="title">便捷校园宝后台管理</h1>
+        <h1 class="title">校园宝后台管理系统</h1>
         <div class="form-wapper">
             <div class="avator">
                 <img src="~assets/img/logo.png" alt="" />
@@ -170,7 +170,6 @@ export default {
         async autoLogin() {
             if (localStorage.getItem('token')) {
                 //本地存有 token
-    
                 // this.$store.commit('getUserdata', admin);
             } else {
                 //随机生成 数字 验证码

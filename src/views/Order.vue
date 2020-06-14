@@ -4,7 +4,7 @@
         <el-card>
             <el-row>
                 <el-col :span="4"
-                    ><el-select v-model="listType" @change="getData" >
+                    ><el-select v-model="listType" @change="getData"  size="medium">
                         <el-option
                             v-for="(item, index) in typelist"
                             :key="index"
@@ -14,7 +14,7 @@
                         </el-option> </el-select
                 ></el-col>
                 <el-col :span="4">
-                    <el-button type="primary">获取列表</el-button>
+                    <el-button type="primary" size="medium">获取列表</el-button>
                 </el-col>
                 <el-col :span="4">
                     <el-input
@@ -22,7 +22,7 @@
                         v-model="queryTitle"
                         clearable
                         @keyup.enter.native="find"
-                        @clear="reset"
+                        @clear="reset" size="medium"
                         ><el-button slot="append" @click="find"
                             >搜索</el-button
                         ></el-input

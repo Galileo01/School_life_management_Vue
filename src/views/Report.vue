@@ -223,46 +223,24 @@ export default {
             }
             // console.log(tHelpNum, tLostNum, tSecNum, tPartNum, tTotal);
             // console.log(Userarr, Lostarr, Helparr, Secarr, Partarr);
-            // this.orderlineDatas = {
-            //     help: Helparr,
-            //     lost: Lostarr,
-            //     secondary: Secarr,
-            //     partTime: Partarr,
-            // };
             this.orderlineDatas = {
-                help: [20, 30, 44, 66, 77, 77, 33],
-                lost: [0, 0, 4, 6, 7, 7, 3],
-                secondary: [203, 303, 442, 664, 774, 774, 343],
-                partTime: [20, 30, 44, 66, 77, 77, 33],
+                help: Helparr,
+                lost: Lostarr,
+                secondary: Secarr,
+                partTime: Partarr,
             };
             this.userLineData = Userarr;
             //保存 今日数据
-            // this.totalData.todayUSers = tUsers ;
-            // this.totalData.todayOrders = tTotal;
+            this.totalData.todayUSers = tUsers;
+            this.totalData.todayOrders = tTotal;
 
-            //测试数据
-            this.totalData.todayUSers = tUsers + 20;
-            this.totalData.todayOrders = tTotal + 50;
-            // this.pieDatas.today = [
-            //     { name: '帮帮贴', value: tHelpNum },
-            //     { name: '二手市场', value: tSecNum },
-            //     { name: '兼职', value: tPartNum },
-            //     { name: '失物招领', value: tLostNum },
-            // ];
-
-            //测试
             this.pieDatas.today = [
-                { name: '帮帮贴', value: 25 },
-                { name: '二手市场', value: 18 },
-                { name: '兼职', value: 20 },
-                { name: '失物招领', value: 10 },
+                { name: '帮帮贴', value: tHelpNum },
+                { name: '二手市场', value: tSecNum },
+                { name: '兼职', value: tPartNum },
+                { name: '失物招领', value: tLostNum },
             ];
-            this.barDatas.today = [
-                tHelpNum + 25,
-                tSecNum + 18,
-                tPartNum + 20,
-                tLostNum + 10,
-            ];
+
             //计算总体数据
             //饼图 数据
             let THelpNum = 0,
@@ -299,13 +277,17 @@ export default {
                 //     TUsers
                 // );
                 //保存数据
+
                 this.pieDatas.total = [
-                    { name: '帮帮贴', value: 25 + THelpNum },
-                    { name: '二手市场', value: 18 + TSecNum },
-                    { name: '兼职', value: 20 + TPartNum },
-                    { name: '失物招领', value: 10 + TLostNum },
+                    { name: '帮帮贴', value: THelpNum },
+                    { name: '二手市场', value: TSecNum },
+                    { name: '兼职', value: TPartNum },
+                    { name: '失物招领', value: TLostNum },
                 ];
+                //数据测试
+
                 this.barDatas.total = [THelpNum, TSecNum, TPartNum, TLostNum];
+                //   this.barDatas.total = [THelpNum, TSecNum, TPartNum, TLostNum];
                 this.changeTongjiData();
                 this.setUserBianhua();
                 this.changeBianhuaData();

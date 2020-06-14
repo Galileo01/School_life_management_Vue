@@ -13,16 +13,19 @@
                         v-model="queryInfo.query"
                         @keyup.enter.native="getUsers"
                         @clear="getUsers"
+                        size="medium"
                     >
                         <el-button
                             slot="append"
                             icon="el-icon-search"
                             @click="getUsers"
+                            
                         ></el-button>
                     </el-input>
                 </el-col>
-                <el-col :span="4" v-if="userRole=='63'">
+                <el-col :span="4" v-if="userRole == '63'">
                     <el-button type="primary" @click="addClick"
+                    size="medium"
                         >添加管理员</el-button
                     >
                 </el-col>
@@ -80,7 +83,7 @@ export default {
             queryInfo: {
                 query: '',
                 pagenum: 1,
-                pagesize: 5
+                pagesize: 5,
             },
             //所有 用户
             users: [],
@@ -89,15 +92,15 @@ export default {
             adddialogVisible: false,
             editdialogVisible: false,
             setdialogVisible: false,
-            operateID: 0 //将要 操作的 用户id
+            operateID: 0, //将要 操作的 用户id
         };
     },
     computed: {
         operatingUser() {
             if (this.users.length === 0) return;
-            const temp = this.users.find(val => val.ID === this.operateID);
+            const temp = this.users.find((val) => val.ID === this.operateID);
             return temp;
-        }
+        },
     },
     methods: {
         handleSizeChange(size) {
@@ -122,9 +125,8 @@ export default {
                 const items = res.data.items;
                 this.users = items.length > 0 ? items : this.users; //如果 获取的数据长度 不为空
                 this.total = items.length > 0 ? res.data.total : this.total;
-                if(items.length===0&&this.queryInfo.query!=='')
-                this.$message.info('没有查找到对应名称的管理员');
-                
+                if (items.length === 0 && this.queryInfo.query !== '')
+                    this.$message.info('没有查找到对应名称的管理员');
             }
         },
         edit(id) {
@@ -135,7 +137,7 @@ export default {
         async deleteFun(account) {
             // console.log(account);
 
-            if (account === 'superadmin' || this.userRole !== 63) {
+            if (account !== 'superadmin' || this.userRole !== 63) {
                 this.$message.error('无法删除系统管理员，你的权限太低');
                 return;
             }
@@ -145,9 +147,9 @@ export default {
                 {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
-                    type: 'warning'
+                    type: 'warning',
                 }
-            ).catch(error => error);
+            ).catch((error) => error);
 
             if (result === 'cancel') this.$message.info('成功取消操作');
             else {
@@ -183,7 +185,7 @@ export default {
                 return;
             }
             this.adddialogVisible = true;
-        }
+        },
     },
     created() {
         this.getUsers();
@@ -192,8 +194,8 @@ export default {
         UsersTable,
         AddDialog,
         EditDialog,
-        SetRoleDialog
-    }
+        SetRoleDialog,
+    },
 };
 </script>
 
