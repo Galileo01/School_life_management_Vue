@@ -4,7 +4,7 @@
             <el-header>
                 <div class="logo-wapper">
                     <img src="~assets/img/logo.png" alt="" class="logo" />
-                    <h3>便捷校园宝 后台Web 管理系统</h3>
+                    <h3>校园宝后台管理系统</h3>
                 </div>
                 <div class="left-wapper">
                     <div class="avator" @click="goProfile">

@@ -6,7 +6,7 @@
                 <el-col :span="10" :offset="1">
                     <el-form :model="userdata" ref="form" :rules="rules">
                         <el-form-item label="用户名" prop="account">
-                            <el-input v-model="userdata.account"></el-input>
+                            <el-input v-model="userdata.account" size="medium"></el-input>
                         </el-form-item>
                         <el-form-item
                             label="密码"
@@ -15,25 +15,25 @@
                         >
                             <el-button
                                 type="primary"
-                                size="medium"
+                                size="small"
                                 @click="dialogVisible = true"
                                 >修改密码</el-button
                             >
                         </el-form-item>
                         <el-form-item label="微信" prop="wechat">
-                            <el-input v-model="userdata.wechat"></el-input
+                            <el-input v-model="userdata.wechat" size="medium"></el-input
                         ></el-form-item>
                         <el-form-item label="QQ">
-                            <el-input v-model="userdata.qq"></el-input
+                            <el-input v-model="userdata.qq" size="medium"></el-input
                         ></el-form-item>
                         <el-form-item label="电话" prop="tel">
-                            <el-input v-model="userdata.tel"></el-input
+                            <el-input v-model="userdata.tel" size="medium"></el-input
                         ></el-form-item>
                         <el-form-item label="邮箱" prop="email">
-                            <el-input v-model="userdata.email"></el-input
+                            <el-input v-model="userdata.email" size="medium"></el-input
                         ></el-form-item>
                         <el-form-item class="submit-wapper">
-                            <el-button type="primary" @click="submit"
+                            <el-button type="primary" @click="submit" size="medium"
                                 >提交</el-button
                             ></el-form-item
                         >
@@ -53,7 +53,7 @@
                 <el-input
                     v-model="passwords.old"
                     type="password"
-                    show-password
+                    show-password size="small"
                 ></el-input>
             </div>
             <div class="input-wa">
@@ -61,12 +61,12 @@
                 ><el-input
                     v-model="passwords.thenew"
                     type="password"
-                    show-password
+                    show-password size="small"
                 ></el-input>
             </div>
             <span slot="footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submitPassEdit"
+                <el-button @click="dialogVisible = false" size="medium">取 消</el-button>
+                <el-button type="primary" @click="submitPassEdit" size="medium"
                     >确 定</el-button
                 >
             </span>
